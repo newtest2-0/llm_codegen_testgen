@@ -1,0 +1,75 @@
+{
+  "providers": [
+    {
+      "name": "openai",
+      "kind": "openai_compatible",
+      "model": "gpt-4o-mini",
+      "base_url_env": "OPENAI_BASE_URL",
+      "api_key_env": "OPENAI_API_KEY"
+    },
+    {
+      "name": "deepseek",
+      "kind": "openai_compatible",
+      "model": "deepseek-chat",
+      "base_url_env": "DEEPSEEK_BASE_URL",
+      "api_key_env": "DEEPSEEK_API_KEY"
+    },
+    {
+      "name": "claude",
+      "kind": "anthropic",
+      "model": "claude-3-5-sonnet-20241022",
+      "api_key_env": "ANTHROPIC_API_KEY"
+    },
+    {
+      "name": "gemini",
+      "kind": "google",
+      "model": "gemini-1.5-flash",
+      "api_key_env": "GOOGLE_API_KEY"
+    },
+    {
+      "name": "qwen",
+      "kind": "openai_compatible",
+      "model": "qwen-plus",
+      "base_url_env": "QWEN_BASE_URL",
+      "api_key_env": "QWEN_API_KEY"
+    },
+    {
+      "name": "baichuan",
+      "kind": "openai_compatible",
+      "model": "Baichuan4",
+      "base_url_env": "BAICHUAN_BASE_URL",
+      "api_key_env": "BAICHUAN_API_KEY"
+    },
+    {
+      "name": "chatglm",
+      "kind": "openai_compatible",
+      "model": "glm-4-plus",
+      "base_url_env": "CHATGLM_BASE_URL",
+      "api_key_env": "CHATGLM_API_KEY"
+    },
+    {
+      "name": "llama",
+      "kind": "openai_compatible",
+      "model": "llama3.1:8b",
+      "base_url_env": "OLLAMA_BASE_URL",
+      "api_key_env": "OLLAMA_API_KEY"
+    }
+  ],
+  "scoring": {
+    "weights": {
+      "bleu": 0.35,
+      "tests_pass_rate": 0.45,
+      "ast_quality": 0.2
+    }
+  },
+  "enhanced_evaluation": {
+    "enabled": true,
+    "weights": {
+      "functionality": 0.35,
+      "quality": 0.25,
+      "style": 0.15,
+      "security": 0.15,
+      "maintainability": 0.1
+    }
+  }
+}
