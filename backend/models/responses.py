@@ -6,6 +6,12 @@ from typing import List, Dict, Any, Optional
 
 class EvalMetrics(BaseModel):
     """评估指标模型"""
+    # 新增的评估指标
+    bleu4: float = Field(..., description="BLEU-4分数（4-gram重叠度评估）")
+    rouge_l: float = Field(..., description="ROUGE-L分数（基于最长公共子序列的评估）")
+    pass_at_1: float = Field(..., description="pass@1指标（单次尝试通过测试的概率）")
+    
+    # 原有评估指标
     bleu: float = Field(..., description="BLEU分数")
     ast_parse_ok: bool = Field(..., description="AST解析是否成功")
     ast_nodes: int = Field(..., description="AST节点数量")
@@ -38,3 +44,4 @@ class GenerateResponse(BaseModel):
 # 避免循环导入
 from .artifacts import CodeArtifact
 GenerateResponse.model_rebuild()
+
