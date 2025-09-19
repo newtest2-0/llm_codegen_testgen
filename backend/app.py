@@ -50,13 +50,15 @@ def create_app() -> FastAPI:
     """
     # 检查是否启用增强评估
     enhanced_enabled = False
+    
     try:
         from core.evaluators.enhanced import EnhancedCodeEvaluator
         enhanced_enabled = True
         logger.info("✅ 增强版代码评测系统已加载")
     except ImportError as e:
+        enhanced_enabled = False
         logger.warning(f"⚠️  增强版代码评测系统不可用: {e}")
-        logger.info("   运行 'python scripts/install_enhanced.py' 安装依赖")
+        logger.info("   请确保 'core/evaluators/enhanced.py' 文件存在，或运行 'python scripts/install_enhanced.py' 安装依赖")
     
     # 更新配置
     config.set("enhanced_evaluation.enabled", enhanced_enabled)

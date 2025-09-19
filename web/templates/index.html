@@ -852,7 +852,203 @@
                   </div>
                 </div>
               </div>
+              <!-- Claude -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="claude">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🎭</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">Claude</div>
+                      <div class="text-sm text-gray-500">Anthropic Claude 3.5</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="sk-ant-..." data-provider="claude">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
+              <!-- Gemini -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="gemini">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">💎</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">Gemini</div>
+                      <div class="text-sm text-gray-500">Google Gemini 1.5</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="AIza..." data-provider="gemini">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Qwen -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="qwen">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🌟</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">通义千问</div>
+                      <div class="text-sm text-gray-500">阿里云 Qwen Plus</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="sk-..." data-provider="qwen">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Baichuan -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="baichuan">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🏔️</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">百川智能</div>
+                      <div class="text-sm text-gray-500">Baichuan4 模型</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="sk-..." data-provider="baichuan">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ChatGLM -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="chatglm">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🧠</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">ChatGLM</div>
+                      <div class="text-sm text-gray-500">智谱 GLM-4 Plus</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="..." data-provider="chatglm">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- LLaMA -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="llama">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🦙</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">LLaMA</div>
+                      <div class="text-sm text-gray-500">Meta LLaMA 3.1</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-green-100 text-green-600">本地模型</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-blue-50 rounded-lg p-3">
+                    <div class="text-sm text-blue-700">
+                      <i class="fas fa-info-circle mr-2"></i>
+                      LLaMA 是本地运行的模型，无需配置 API Key。请确保 Ollama 服务正在运行。
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
               <!-- 其他API配置项保持不变 -->
             </div>
           </div>
@@ -909,29 +1105,869 @@
     </div>
   </div>
 
-  <!-- 页脚 -->
-  <footer class="mt-16 py-8 border-t border-gray-200 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center">
-        <div class="flex items-center justify-center gap-2 mb-4">
-          <div class="w-6 h-6 bg-gray-900 rounded flex items-center justify-center">
-            <i class="fas fa-code text-white text-xs"></i>
-          </div>
-          <span class="font-semibold text-gray-900">CodeForge</span>
+  <!-- 历史记录模态框 -->
+  <div id="historyModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-4xl w-full max-h-[80vh] overflow-hidden">
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-900">历史记录</h3>
+        <button id="closeHistoryModal" class="text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto max-h-[70vh]">
+        <div id="historyList" class="space-y-4">
+          <!-- 历史记录项目将在这里动态生成 -->
         </div>
-        <p class="text-sm text-gray-500 mb-4">
-          专业的代码开发与质量保障平台
-        </p>
-        <div class="flex items-center justify-center gap-8 text-xs text-gray-400">
-          <span>© 2024 CodeForge</span>
-          <span>•</span>
-          <span>企业级代码生成解决方案</span>
-          <span>•</span>
-          <span>智能质量评估</span>
+        <div id="historyEmpty" class="text-center py-12 text-gray-500 hidden">
+          <i class="fas fa-history text-4xl mb-4 opacity-50"></i>
+          <p>暂无历史记录</p>
+          <p class="text-sm mt-2">生成代码后将自动保存到历史记录</p>
         </div>
       </div>
     </div>
-  </footer>
+  </div>
+
+  <!-- 导出代码模态框 -->
+  <div id="exportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-900">导出代码</h3>
+        <button id="closeExportModal" class="text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto max-h-[70vh]">
+        <div class="space-y-6">
+          <!-- 导出格式选择 -->
+          <div>
+            <h4 class="text-lg font-medium text-gray-900 mb-4">导出格式</h4>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="export-format-option flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="exportFormat" value="zip" checked class="mr-3">
+                <div>
+                  <div class="font-medium">ZIP 压缩包</div>
+                  <div class="text-sm text-gray-500">包含所有文件的完整项目</div>
+                </div>
+              </label>
+              <label class="export-format-option flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="exportFormat" value="python" class="mr-3">
+                <div>
+                  <div class="font-medium">Python 文件</div>
+                  <div class="text-sm text-gray-500">单个 .py 文件</div>
+                </div>
+              </label>
+              <label class="export-format-option flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="exportFormat" value="text" class="mr-3">
+                <div>
+                  <div class="font-medium">纯文本</div>
+                  <div class="text-sm text-gray-500">复制到剪贴板</div>
+                </div>
+              </label>
+              <label class="export-format-option flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="exportFormat" value="markdown" class="mr-3">
+                <div>
+                  <div class="font-medium">Markdown</div>
+                  <div class="text-sm text-gray-500">文档格式</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- 导出内容选择 -->
+          <div>
+            <h4 class="text-lg font-medium text-gray-900 mb-4">导出内容</h4>
+            <div class="space-y-3">
+              <label class="flex items-center">
+                <input type="checkbox" id="includeCode" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <span class="ml-2 text-sm text-gray-700">生成的代码</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="includeTests" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <span class="ml-2 text-sm text-gray-700">测试用例</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="includeResults" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <span class="ml-2 text-sm text-gray-700">评测结果（含BLEU4、ROUGE-L、pass@1）</span>
+              </label>
+            </div>
+          </div>
+          <div class="flex gap-3 pt-4">
+            <button id="confirmExport" class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+              <i class="fas fa-download mr-2"></i>导出
+            </button>
+            <button id="cancelExport" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              取消
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 设置模态框 -->
+  <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-3xl w-full max-h-[80vh] overflow-hidden">
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-900">系统设置</h3>
+        <button id="closeSettingsModal" class="text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto max-h-[70vh]">
+        <div class="space-y-6">
+          <!-- API配置 -->
+          <div>
+            <h4 class="text-lg font-medium text-gray-900 mb-4">API配置</h4>
+            <div class="border border-gray-200 rounded-lg max-h-80 overflow-y-auto">
+              <!-- OpenAI -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="openai">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🤖</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">OpenAI</div>
+                      <div class="text-sm text-gray-500">GPT-4 系列模型</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="sk-..." data-provider="openai">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- DeepSeek -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="deepseek">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🔍</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">DeepSeek</div>
+                      <div class="text-sm text-gray-500">DeepSeek Chat 模型</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="sk-..." data-provider="deepseek">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Claude -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="claude">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🎭</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">Claude</div>
+                      <div class="text-sm text-gray-500">Anthropic Claude 3.5</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="sk-ant-..." data-provider="claude">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gemini -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="gemini">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">💎</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">Gemini</div>
+                      <div class="text-sm text-gray-500">Google Gemini 1.5</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="AIza..." data-provider="gemini">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Qwen -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="qwen">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🌟</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">通义千问</div>
+                      <div class="text-sm text-gray-500">阿里云 Qwen Plus</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="sk-..." data-provider="qwen">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Baichuan -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="baichuan">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🏔️</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">百川智能</div>
+                      <div class="text-sm text-gray-500">Baichuan4 模型</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="sk-..." data-provider="baichuan">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ChatGLM -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="chatglm">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🧠</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">ChatGLM</div>
+                      <div class="text-sm text-gray-500">智谱 GLM-4 Plus</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="..." data-provider="chatglm">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- LLaMA -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="llama">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🦙</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">LLaMA</div>
+                      <div class="text-sm text-gray-500">Meta LLaMA 3.1</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-green-100 text-green-600">本地模型</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-blue-50 rounded-lg p-3">
+                    <div class="text-sm text-blue-700">
+                      <i class="fas fa-info-circle mr-2"></i>
+                      LLaMA 是本地运行的模型，无需配置 API Key。请确保 Ollama 服务正在运行。
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 系统偏好设置 -->
+          <div>
+            <h4 class="text-lg font-medium text-gray-900 mb-4">系统偏好</h4>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">默认编程语言</label>
+                <select id="defaultLanguage" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="python">Python</option>
+                  <option value="javascript">JavaScript</option>
+                  <option value="java">Java</option>
+                  <option value="cpp">C++</option>
+                  <option value="go">Go</option>
+                </select>
+              </div>
+              <div>
+                <label class="flex items-center">
+                  <input type="checkbox" id="autoSaveHistory" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                  <span class="ml-2 text-sm text-gray-700">自动保存生成历史</span>
+                </label>
+              </div>
+              <div>
+                <label class="flex items-center">
+                  <input type="checkbox" id="showNotifications" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                  <span class="ml-2 text-sm text-gray-700">显示系统通知</span>
+                </label>
+              </div>
+              <div>
+                <label class="flex items-center">
+                  <input type="checkbox" id="showAdvancedMetrics" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                  <span class="ml-2 text-sm text-gray-700">显示高级评估指标（BLEU4、ROUGE-L、pass@1）</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 操作按钮 -->
+          <div class="flex gap-3 pt-4 border-t border-gray-200">
+            <button id="saveSettings" class="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+              <i class="fas fa-save mr-2"></i>保存设置
+            </button>
+            <button id="resetSettings" class="bg-gray-500 text-white py-3 px-6 rounded-lg hover:bg-gray-600 transition-colors">
+              <i class="fas fa-undo mr-2"></i>重置
+            </button>
+            <button id="cancelSettings" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              取消
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 历史记录模态框 -->
+  <div id="historyModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-4xl w-full max-h-[80vh] overflow-hidden">
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-900">历史记录</h3>
+        <button id="closeHistoryModal" class="text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto max-h-[70vh]">
+        <div id="historyList" class="space-y-4">
+          <!-- 历史记录项目将在这里动态生成 -->
+        </div>
+        <div id="historyEmpty" class="text-center py-12 text-gray-500 hidden">
+          <i class="fas fa-history text-4xl mb-4 opacity-50"></i>
+          <p>暂无历史记录</p>
+          <p class="text-sm mt-2">生成代码后将自动保存到历史记录</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导出代码模态框 -->
+  <div id="exportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-900">导出代码</h3>
+        <button id="closeExportModal" class="text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto max-h-[70vh]">
+        <div class="space-y-6">
+          <!-- 导出格式选择 -->
+          <div>
+            <h4 class="text-lg font-medium text-gray-900 mb-4">导出格式</h4>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="export-format-option flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="exportFormat" value="zip" checked class="mr-3">
+                <div>
+                  <div class="font-medium">ZIP 压缩包</div>
+                  <div class="text-sm text-gray-500">包含所有文件的完整项目</div>
+                </div>
+              </label>
+              <label class="export-format-option flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="exportFormat" value="python" class="mr-3">
+                <div>
+                  <div class="font-medium">Python 文件</div>
+                  <div class="text-sm text-gray-500">单个 .py 文件</div>
+                </div>
+              </label>
+              <label class="export-format-option flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="exportFormat" value="text" class="mr-3">
+                <div>
+                  <div class="font-medium">纯文本</div>
+                  <div class="text-sm text-gray-500">复制到剪贴板</div>
+                </div>
+              </label>
+              <label class="export-format-option flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="exportFormat" value="markdown" class="mr-3">
+                <div>
+                  <div class="font-medium">Markdown</div>
+                  <div class="text-sm text-gray-500">文档格式</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- 导出内容选择 -->
+          <div>
+            <h4 class="text-lg font-medium text-gray-900 mb-4">导出内容</h4>
+            <div class="space-y-3">
+              <label class="flex items-center">
+                <input type="checkbox" id="includeCode" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <span class="ml-2 text-sm text-gray-700">生成的代码</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="includeTests" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <span class="ml-2 text-sm text-gray-700">测试用例</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="includeResults" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <span class="ml-2 text-sm text-gray-700">评测结果（含BLEU4、ROUGE-L、pass@1）</span>
+              </label>
+            </div>
+          </div>
+          <div class="flex gap-3 pt-4">
+            <button id="confirmExport" class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+              <i class="fas fa-download mr-2"></i>导出
+            </button>
+            <button id="cancelExport" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              取消
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 设置模态框 -->
+  <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-3xl w-full max-h-[80vh] overflow-hidden">
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-900">系统设置</h3>
+        <button id="closeSettingsModal" class="text-gray-400 hover:text-gray-600">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto max-h-[70vh]">
+        <div class="space-y-6">
+          <!-- API配置 -->
+          <div>
+            <h4 class="text-lg font-medium text-gray-900 mb-4">API配置</h4>
+            <div class="border border-gray-200 rounded-lg max-h-80 overflow-y-auto">
+              <!-- OpenAI -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="openai">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🤖</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">OpenAI</div>
+                      <div class="text-sm text-gray-500">GPT-4 系列模型</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="sk-..." data-provider="openai">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- DeepSeek -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="deepseek">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🔍</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">DeepSeek</div>
+                      <div class="text-sm text-gray-500">DeepSeek Chat 模型</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="sk-..." data-provider="deepseek">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Claude -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="claude">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🎭</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">Claude</div>
+                      <div class="text-sm text-gray-500">Anthropic Claude 3.5</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="sk-ant-..." data-provider="claude">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gemini -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="gemini">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">💎</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">Gemini</div>
+                      <div class="text-sm text-gray-500">Google Gemini 1.5</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="AIza..." data-provider="gemini">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Qwen -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="qwen">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🌟</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">通义千问</div>
+                      <div class="text-sm text-gray-500">阿里云 Qwen Plus</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="sk-..." data-provider="qwen">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Baichuan -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="baichuan">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🏔️</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">百川智能</div>
+                      <div class="text-sm text-gray-500">Baichuan4 模型</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="sk-..." data-provider="baichuan">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ChatGLM -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="chatglm">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🧠</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">ChatGLM</div>
+                      <div class="text-sm text-gray-500">智谱 GLM-4 Plus</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">未配置</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">API Key</label>
+                    <div class="flex gap-2">
+                      <input type="password" class="api-key-input flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="..." data-provider="chatglm">
+                      <button class="toggle-visibility px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-eye text-gray-500"></i>
+                      </button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                      <button class="save-api-key px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">保存</button>
+                      <button class="clear-api-key px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors">清除</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- LLaMA -->
+              <div class="api-provider-item border-b border-gray-100 last:border-b-0" data-provider="llama">
+                <div class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <span class="text-sm">🦙</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900">LLaMA</div>
+                      <div class="text-sm text-gray-500">Meta LLaMA 3.1</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="api-status text-xs px-2 py-1 rounded-full bg-green-100 text-green-600">本地模型</span>
+                    <i class="fas fa-chevron-right text-gray-400 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="api-config-panel hidden px-4 pb-4">
+                  <div class="bg-blue-50 rounded-lg p-3">
+                    <div class="text-sm text-blue-700">
+                      <i class="fas fa-info-circle mr-2"></i>
+                      LLaMA 是本地运行的模型，无需配置 API Key。请确保 Ollama 服务正在运行。
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 系统偏好设置 -->
+          <div>
+            <h4 class="text-lg font-medium text-gray-900 mb-4">系统偏好</h4>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">默认编程语言</label>
+                <select id="defaultLanguage" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="python">Python</option>
+                  <option value="javascript">JavaScript</option>
+                  <option value="java">Java</option>
+                  <option value="cpp">C++</option>
+                  <option value="go">Go</option>
+                </select>
+              </div>
+              <div>
+                <label class="flex items-center">
+                  <input type="checkbox" id="autoSaveHistory" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                  <span class="ml-2 text-sm text-gray-700">自动保存生成历史</span>
+                </label>
+              </div>
+              <div>
+                <label class="flex items-center">
+                  <input type="checkbox" id="showNotifications" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                  <span class="ml-2 text-sm text-gray-700">显示系统通知</span>
+                </label>
+              </div>
+              <div>
+                <label class="flex items-center">
+                  <input type="checkbox" id="showAdvancedMetrics" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                  <span class="ml-2 text-sm text-gray-700">显示高级评估指标（BLEU4、ROUGE-L、pass@1）</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 操作按钮 -->
+          <div class="flex gap-3 pt-4 border-t border-gray-200">
+            <button id="saveSettings" class="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+              <i class="fas fa-save mr-2"></i>保存设置
+            </button>
+            <button id="resetSettings" class="bg-gray-500 text-white py-3 px-6 rounded-lg hover:bg-gray-600 transition-colors">
+              <i class="fas fa-undo mr-2"></i>重置
+            </button>
+            <button id="cancelSettings" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              取消
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     // 示例数据 - 包含新添加的评估指标
@@ -1069,28 +2105,37 @@
       resultsContainer.classList.remove('hidden');
     }
 
-    // 生成按钮点击事件
-    document.getElementById('runBtn').addEventListener('click', function() {
-      // 显示测试用例区域
+    // 生成按钮点击事件，增加 loading 状态和防抖
+    const runBtn = document.getElementById('runBtn');
+    let isGenerating = false;
+    runBtn.addEventListener('click', function() {
+      if (isGenerating) return;
+      isGenerating = true;
+      runBtn.disabled = true;
+      runBtn.innerHTML = `<i class="fas fa-spinner fa-spin w-4 h-4"></i><span>生成中...</span>`;
+
+
       document.getElementById('testsSection').classList.remove('hidden');
-      
-      // 模拟加载延迟
       setTimeout(() => {
         renderWinner();
         renderResults();
+        isGenerating = false;
+        runBtn.disabled = false;
+        runBtn.innerHTML = `<i class="fas fa-play w-4 h-4"></i><span>生成代码</span>`;
       }, 1500);
     });
 
-    // 其他辅助函数
+    // 代码查看和复制功能简单实现
     function viewCode(path) {
-      console.log(`查看代码: ${path}`);
-      // 实际实现代码查看逻辑
+      alert(`查看代码路径: ${path}`);
+      // 可扩展为弹窗展示代码内容
     }
 
     function copyCode(path) {
-      console.log(`复制代码: ${path}`);
-      // 实际实现代码复制逻辑
-      alert('代码已复制到剪贴板');
+      // 假设代码内容已加载到某变量
+      navigator.clipboard.writeText(`代码路径: ${path}`).then(() => {
+        alert('代码路径已复制到剪贴板');
+      });
     }
 
     // 模态框控制
@@ -1118,4 +2163,6 @@
       document.getElementById('settingsModal').classList.add('hidden');
     });
   </script>
+</body>
+</html>
 

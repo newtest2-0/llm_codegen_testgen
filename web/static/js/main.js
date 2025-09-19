@@ -290,7 +290,7 @@ document.getElementById("runBtn").addEventListener("click", async () => {
   console.log('准备发送生成请求:', genBody);
 
   try {
-    const genResponse = await fetch(API_BASE + "/generate", {
+    const genResponse = await fetch(API_BASE + "/api/v1/generation/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(genBody)
@@ -316,7 +316,7 @@ document.getElementById("runBtn").addEventListener("click", async () => {
     const evalBody = { session_id: gen.session_id, artifacts, tests_code: gen.tests_code, language };
     console.log('准备发送评测请求:', evalBody);
     
-    const evalResponse = await fetch(API_BASE + "/evaluate", {
+    const evalResponse = await fetch(API_BASE + "/api/v1/evaluation/evaluate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(evalBody)
@@ -1133,7 +1133,7 @@ async function generateCode() {
   console.log('准备发送生成请求:', genBody);
   
   try {
-    const genResponse = await fetch(API_BASE + "/generate", {
+    const genResponse = await fetch(API_BASE + "/api/v1/generation/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(genBody)
@@ -1160,7 +1160,7 @@ async function generateCode() {
     const evalBody = { session_id: gen.session_id, artifacts, tests_code: gen.tests_code, language };
     console.log('准备发送评测请求:', evalBody);
     
-    const evalResponse = await fetch(API_BASE + "/evaluate", {
+    const evalResponse = await fetch(API_BASE + "/api/v1/evaluation/evaluate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(evalBody)
