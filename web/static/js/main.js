@@ -290,7 +290,7 @@ document.getElementById("runBtn").addEventListener("click", async () => {
   console.log('准备发送生成请求:', genBody);
 
   try {
-    const genResponse = await fetch(API_BASE + "/generate", {
+    const genResponse = await fetch(API_BASE + "/api/v1/generation/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(genBody)
@@ -316,7 +316,7 @@ document.getElementById("runBtn").addEventListener("click", async () => {
     const evalBody = { session_id: gen.session_id, artifacts, tests_code: gen.tests_code, language };
     console.log('准备发送评测请求:', evalBody);
     
-    const evalResponse = await fetch(API_BASE + "/evaluate", {
+    const evalResponse = await fetch(API_BASE + "/api/v1/evaluation/evaluate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(evalBody)
@@ -989,49 +989,85 @@ const SettingsManager = {
     
     // 保存API密钥
     document.querySelectorAll('.save-api-key').forEach(button => {
-      button.addEventListener('click', () => {
+      button.addEventListener('click', async () => {
         const item = button.closest('.api-provider-item');
         const provider = item.dataset.provider;
         const input = item.querySelector('.api-key-input');
         const value = input.value.trim();
         
-        // 获取当前设置
-        const settings = Storage.getSettings();
-        settings[`${provider}Key`] = value;
-        
-        // 保存设置
-        Storage.saveSettings(settings);
-        
-        // 更新状态显示
-        this.updateApiStatuses(settings);
-        
-        // 显示通知
-        this.showNotification(`${provider.toUpperCase()} API Key 已保存`);
-      });
-    });
-    
-    // 清除API密钥
-    document.querySelectorAll('.clear-api-key').forEach(button => {
-      button.addEventListener('click', () => {
-        const item = button.closest('.api-provider-item');
-        const provider = item.dataset.provider;
-        const input = item.querySelector('.api-key-input');
-        
-        if (confirm(`确定要清除 ${provider.toUpperCase()} 的API密钥吗？`)) {
-          input.value = '';
+        try {
+          // 调用后端API保存密钥
+          const response = await fetch(API_BASE + '/api/v1/settings/api-key', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              provider: provider,
+              api_key: value
+            })
+          });
           
-          // 获取当前设置
+          if (!response.ok) {
+            throw new Error(`保存失败: ${response.status}`);
+          }
+          
+          const result = await response.json();
+          
+          // 同时保存到本地存储（兼容性）
           const settings = Storage.getSettings();
-          delete settings[`${provider}Key`];
-          
-          // 保存设置
+          settings[`${provider}Key`] = value;
           Storage.saveSettings(settings);
           
           // 更新状态显示
           this.updateApiStatuses(settings);
           
           // 显示通知
-          this.showNotification(`${provider.toUpperCase()} API Key 已清除`);
+          this.showNotification(result.message || `${provider.toUpperCase()} API Key 已保存`);
+          
+        } catch (error) {
+          console.error('保存API密钥失败:', error);
+          this.showNotification(`保存失败: ${error.message}`, 'error');
+        }
+      });
+    });
+    
+    // 清除API密钥
+    document.querySelectorAll('.clear-api-key').forEach(button => {
+      button.addEventListener('click', async () => {
+        const item = button.closest('.api-provider-item');
+        const provider = item.dataset.provider;
+        const input = item.querySelector('.api-key-input');
+        
+        if (confirm(`确定要清除 ${provider.toUpperCase()} 的API密钥吗？`)) {
+          try {
+            // 调用后端API清除密钥
+            const response = await fetch(API_BASE + `/api/v1/settings/api-key/${provider}`, {
+              method: 'DELETE'
+            });
+            
+            if (!response.ok) {
+              throw new Error(`清除失败: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            // 清空输入框
+            input.value = '';
+            
+            // 同时清除本地存储（兼容性）
+            const settings = Storage.getSettings();
+            delete settings[`${provider}Key`];
+            Storage.saveSettings(settings);
+            
+            // 更新状态显示
+            this.updateApiStatuses(settings);
+            
+            // 显示通知
+            this.showNotification(result.message || `${provider.toUpperCase()} API Key 已清除`);
+            
+          } catch (error) {
+            console.error('清除API密钥失败:', error);
+            this.showNotification(`清除失败: ${error.message}`, 'error');
+          }
         }
       });
     });
@@ -1072,12 +1108,15 @@ const SettingsManager = {
   },
 
   // 显示通知
-  showNotification: function(message) {
+  showNotification: function(message, type = 'success') {
     const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-transform duration-300 translate-x-full';
+    const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
+    const icon = type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle';
+    
+    notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-transform duration-300 translate-x-full`;
     notification.innerHTML = `
       <div class="flex items-center gap-2">
-        <i class="fas fa-check-circle"></i>
+        <i class="fas ${icon}"></i>
         <span>${message}</span>
       </div>
     `;
@@ -1133,7 +1172,7 @@ async function generateCode() {
   console.log('准备发送生成请求:', genBody);
   
   try {
-    const genResponse = await fetch(API_BASE + "/generate", {
+    const genResponse = await fetch(API_BASE + "/api/v1/generation/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(genBody)
@@ -1160,7 +1199,7 @@ async function generateCode() {
     const evalBody = { session_id: gen.session_id, artifacts, tests_code: gen.tests_code, language };
     console.log('准备发送评测请求:', evalBody);
     
-    const evalResponse = await fetch(API_BASE + "/evaluate", {
+    const evalResponse = await fetch(API_BASE + "/api/v1/evaluation/evaluate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(evalBody)
@@ -1232,7 +1271,7 @@ function createResultCard(result, index) {
   const div = document.createElement('div');
   div.className = 'surface-card rounded-xl p-6';
   
-  const score = Math.round(result.total_score * 100);
+  const score = Math.round((result.metrics?.aggregate_score || 0) * 100);
   const provider = result.provider || `方案${index + 1}`;
   
   div.innerHTML = `
@@ -1247,15 +1286,15 @@ function createResultCard(result, index) {
     <div class="space-y-3 mb-4">
       <div class="flex justify-between">
         <span class="text-sm text-gray-600">BLEU分数:</span>
-        <span class="font-medium">${Math.round((result.bleu_score || 0) * 100)}</span>
+        <span class="font-medium">${Math.round((result.metrics?.bleu || 0) * 100)}</span>
       </div>
       <div class="flex justify-between">
         <span class="text-sm text-gray-600">测试通过率:</span>
-        <span class="font-medium">${Math.round((result.tests_pass_rate || 0) * 100)}%</span>
+        <span class="font-medium">${result.metrics?.tests?.passed || 0}/${(result.metrics?.tests?.passed || 0) + (result.metrics?.tests?.failed || 0)}</span>
       </div>
       <div class="flex justify-between">
-        <span class="text-sm text-gray-600">AST质量:</span>
-        <span class="font-medium">${Math.round((result.ast_quality || 0) * 100)}</span>
+        <span class="text-sm text-gray-600">AST解析:</span>
+        <span class="font-medium">${result.metrics?.ast_parse_ok ? '✅' : '❌'}</span>
       </div>
     </div>
     
@@ -1273,7 +1312,7 @@ function createResultCard(result, index) {
               <i class="fas fa-copy"></i>
             </button>
           </div>
-          <pre id="code${index}Code" class="p-4 overflow-auto max-h-96 font-mono text-sm">${result.code || ''}</pre>
+          <pre id="code${index}Code" class="p-4 overflow-auto max-h-96 font-mono text-sm">${result._code || ''}</pre>
         </div>
       </div>
     </details>
@@ -1290,15 +1329,15 @@ function displayWinner(winner) {
   
   if (!winnerSection || !winnerMeta || !winnerCode) return;
   
-  const score = Math.round(winner.total_score * 100);
+  const score = Math.round((winner.metrics?.aggregate_score || 0) * 100);
   
   winnerMeta.textContent = `提供者: ${winner.provider || '未知'}
 总分: ${score}/100
-BLEU分数: ${Math.round((winner.bleu_score || 0) * 100)}
-测试通过率: ${Math.round((winner.tests_pass_rate || 0) * 100)}%
-AST质量: ${Math.round((winner.ast_quality || 0) * 100)}`;
+BLEU分数: ${Math.round((winner.metrics?.bleu || 0) * 100)}
+测试通过: ${winner.metrics?.tests?.passed || 0}/${(winner.metrics?.tests?.passed || 0) + (winner.metrics?.tests?.failed || 0)}
+AST解析: ${winner.metrics?.ast_parse_ok ? '✅' : '❌'}`;
   
-  winnerCode.textContent = winner.code || '';
+  winnerCode.textContent = winner._code || '';
   
   winnerSection.classList.remove('hidden');
 }
@@ -1319,6 +1358,474 @@ function copyToClipboard(button) {
   });
 }
 
+// 专业生成功能
+async function professionalGenerate() {
+  console.log('🎯 点击了专业生成按钮');
+  
+  const requirement = document.getElementById("requirement").value.trim();
+  const language = document.getElementById("language").value;
+  const extra = document.getElementById("extra").value.trim();
+  
+  if (!requirement) {
+    alert("请输入需求描述");
+    return;
+  }
+  
+  // 显示加载状态
+  const professionalBtn = document.getElementById('professionalRunBtn');
+  const originalText = professionalBtn.innerHTML;
+  professionalBtn.innerHTML = '<i class="fas fa-spinner fa-spin w-4 h-4"></i><span>需求优化中...</span>';
+  professionalBtn.disabled = true;
+  
+  try {
+    // 第一步：优化需求
+    console.log('📝 开始需求优化...');
+    
+    // 获取选中的模型提供者，使用第一个作为需求优化器
+    const selectedProviders = Array.from(document.querySelectorAll('.provider-checkbox:checked')).map(cb => cb.value);
+    const preferredRefiner = selectedProviders.length > 0 ? selectedProviders[0] : null;
+    
+    const refineResponse = await fetch(API_BASE + "/api/v1/generation/refine-requirement", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        requirement: requirement,
+        language: language,
+        extra_directives: extra,
+        preferred_refiner: preferredRefiner  // 使用选中的第一个模型进行需求优化
+      })
+    });
+    
+    if (!refineResponse.ok) {
+      throw new Error(`需求优化失败: ${refineResponse.status} ${refineResponse.statusText}`);
+    }
+    
+    const refineResult = await refineResponse.json();
+    console.log('✅ 需求优化完成:', refineResult);
+    
+    // 显示优化后的需求
+    showRefinedRequirement(refineResult);
+    
+    // 重置按钮状态
+    professionalBtn.innerHTML = originalText;
+    professionalBtn.disabled = false;
+    
+    showNotification('需求优化完成！您可以编辑需求，然后点击"继续生成代码"', 'success');
+    
+    return; // 不再自动继续生成代码，等待用户点击"继续生成"
+    
+    const genBody = {
+      requirement: refineResult.refined_requirement, // 使用优化后的需求
+      language: language,
+      providers: selectedProviders,
+      extra_directives: extra || null
+    };
+    
+    // 清空之前的结果
+    const resultsDiv = document.getElementById("results");
+    const winnerDiv = document.getElementById("winner");
+    const testsDiv = document.getElementById("testsSection");
+    
+    resultsDiv.innerHTML = '';
+    winnerDiv.classList.add('hidden');
+    testsDiv.classList.add('hidden');
+    
+    // 调用现有的代码生成流程
+    const genResponse = await fetch(API_BASE + "/api/v1/generation/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(genBody)
+    });
+    
+    if (!genResponse.ok) {
+      throw new Error(`专业代码生成失败: ${genResponse.status} ${genResponse.statusText}`);
+    }
+    
+    const gen = await genResponse.json();
+    console.log('🎉 专业代码生成完成:', gen);
+
+    // 显示测试用例
+    if (gen.tests_code) {
+      displayTests(gen.tests_code);
+    }
+
+    const artifacts = gen.artifacts.map(a => ({...a, _code: a.code}));
+    const evalBody = { session_id: gen.session_id, artifacts, tests_code: gen.tests_code, language };
+    
+    const evalResponse = await fetch(API_BASE + "/api/v1/evaluation/evaluate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(evalBody)
+    });
+    
+    if (!evalResponse.ok) {
+      throw new Error(`代码评测失败: ${evalResponse.status} ${evalResponse.statusText}`);
+    }
+    
+    const ev = await evalResponse.json();
+    console.log('📊 代码评测完成:', ev);
+
+    ev.results.forEach((r,i)=>{ r._code = artifacts[i]._code; });
+
+    const best = ev.best;
+    const winner = document.getElementById("winner");
+    winner.classList.remove("hidden");
+    document.getElementById("winnerMeta").textContent = JSON.stringify(best, null, 2);
+    document.getElementById("winnerCode").textContent = artifacts.find(a => a.provider===best.provider)._code;
+
+    const html = ev.results
+      .sort((a,b)=>b.metrics.aggregate_score - a.metrics.aggregate_score)
+      .map(card).join("\\n");
+    document.getElementById("results").innerHTML = html;
+    
+    console.log('✅ 专业生成流程完成！');
+    
+  } catch (error) {
+    console.error('❌ 需求优化失败:', error);
+    showNotification(`需求优化失败: ${error.message}`, 'error');
+  } finally {
+    // 恢复按钮状态
+    professionalBtn.innerHTML = originalText;
+    professionalBtn.disabled = false;
+  }
+}
+
+// 显示优化后的需求
+function showRefinedRequirement(refineResult) {
+  // 在需求输入框上方添加一个展示优化需求的区域
+  const requirementContainer = document.getElementById('requirement').parentElement;
+  
+  // 移除之前的优化需求显示
+  const existingRefined = document.getElementById('refinedRequirementDisplay');
+  if (existingRefined) {
+    existingRefined.remove();
+  }
+  
+  // 创建优化需求显示区域
+  const refinedDiv = document.createElement('div');
+  refinedDiv.id = 'refinedRequirementDisplay';
+  refinedDiv.className = 'mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg';
+  refinedDiv.innerHTML = `
+    <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center gap-2">
+        <i class="fas fa-magic text-blue-600"></i>
+        <span class="text-sm font-medium text-blue-900">AI优化后的专业需求</span>
+        <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+          由 ${refineResult.refinement_provider} 生成
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="editRefinedRequirement()" id="editRefinedBtn" class="text-blue-600 hover:text-blue-800 text-sm">
+          <i class="fas fa-edit mr-1"></i>编辑
+        </button>
+        <button onclick="copyRefinedRequirement()" class="text-blue-600 hover:text-blue-800 text-sm">
+          <i class="fas fa-copy mr-1"></i>复制
+        </button>
+        <button onclick="toggleRefinedRequirement()" class="text-blue-600 hover:text-blue-800 text-sm">
+          <i class="fas fa-eye-slash mr-1"></i>收起
+        </button>
+      </div>
+    </div>
+    
+    <!-- 显示模式 -->
+    <div id="refinedDisplay" class="bg-white p-3 rounded border">
+      <pre class="text-sm text-gray-800 whitespace-pre-wrap font-mono">${refineResult.refined_requirement}</pre>
+    </div>
+    
+    <!-- 编辑模式 -->
+    <div id="refinedEditor" class="bg-white p-3 rounded border" style="display: none;">
+      <textarea id="refinedTextarea" class="w-full h-64 p-3 border border-gray-300 rounded text-sm resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="编辑您的需求...">${refineResult.refined_requirement}</textarea>
+      <div class="flex items-center gap-2 mt-3">
+        <button onclick="saveRefinedRequirement()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm flex items-center gap-2">
+          <i class="fas fa-check"></i>
+          保存
+        </button>
+        <button onclick="cancelEditRequirement()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm flex items-center gap-2">
+          <i class="fas fa-times"></i>
+          取消
+        </button>
+      </div>
+    </div>
+    
+    <!-- 操作按钮区域 -->
+    <div class="mt-3 flex items-center gap-3 pt-3 border-t border-blue-200">
+      <button onclick="continueGenerate()" id="continueGenerateBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded flex items-center gap-2 font-medium">
+        <i class="fas fa-play"></i>
+        继续生成代码
+      </button>
+      <div class="text-xs text-gray-600">
+        <strong>原始需求：</strong>${refineResult.original_requirement}
+      </div>
+    </div>
+  `;
+  
+  requirementContainer.appendChild(refinedDiv);
+  
+  // 滚动到优化需求区域
+  setTimeout(() => {
+    refinedDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+  
+  // 存储优化后的需求以供后续使用
+  window.refinedRequirementData = refineResult;
+}
+
+// 复制优化后的需求
+function copyRefinedRequirement() {
+  if (window.refinedRequirementData) {
+    navigator.clipboard.writeText(window.refinedRequirementData.refined_requirement).then(() => {
+      showNotification('优化需求已复制到剪贴板');
+    }).catch(err => {
+      console.error('复制失败:', err);
+    });
+  }
+}
+
+// 使用优化后的需求替换原始需求
+function useRefinedRequirement() {
+  if (window.refinedRequirementData) {
+    document.getElementById('requirement').value = window.refinedRequirementData.refined_requirement;
+    showNotification('已将优化需求填入输入框');
+  }
+}
+
+// 编辑优化后的需求
+function editRefinedRequirement() {
+  const display = document.getElementById('refinedDisplay');
+  const editor = document.getElementById('refinedEditor');
+  const editBtn = document.getElementById('editRefinedBtn');
+  
+  if (display && editor) {
+    display.style.display = 'none';
+    editor.style.display = 'block';
+    editBtn.innerHTML = '<i class="fas fa-times mr-1"></i>取消编辑';
+    editBtn.onclick = cancelEditRequirement;
+    
+    // 自动聚焦到文本框
+    const textarea = document.getElementById('refinedTextarea');
+    if (textarea) {
+      textarea.focus();
+    }
+  }
+}
+
+// 保存编辑后的需求
+function saveRefinedRequirement() {
+  const textarea = document.getElementById('refinedTextarea');
+  const display = document.getElementById('refinedDisplay');
+  const editor = document.getElementById('refinedEditor');
+  const editBtn = document.getElementById('editRefinedBtn');
+  
+  if (textarea && display && editor) {
+    const editedRequirement = textarea.value.trim();
+    if (!editedRequirement) {
+      alert('需求内容不能为空');
+      return;
+    }
+    
+    // 更新显示内容
+    const preElement = display.querySelector('pre');
+    if (preElement) {
+      preElement.textContent = editedRequirement;
+    }
+    
+    // 更新存储的需求数据
+    if (window.refinedRequirementData) {
+      window.refinedRequirementData.refined_requirement = editedRequirement;
+    }
+    
+    // 切换回显示模式
+    display.style.display = 'block';
+    editor.style.display = 'none';
+    editBtn.innerHTML = '<i class="fas fa-edit mr-1"></i>编辑';
+    editBtn.onclick = editRefinedRequirement;
+    
+    showNotification('需求已保存');
+  }
+}
+
+// 取消编辑需求
+function cancelEditRequirement() {
+  const display = document.getElementById('refinedDisplay');
+  const editor = document.getElementById('refinedEditor');
+  const editBtn = document.getElementById('editRefinedBtn');
+  const textarea = document.getElementById('refinedTextarea');
+  
+  if (display && editor && textarea) {
+    // 恢复原始内容
+    if (window.refinedRequirementData) {
+      textarea.value = window.refinedRequirementData.refined_requirement;
+    }
+    
+    // 切换回显示模式
+    display.style.display = 'block';
+    editor.style.display = 'none';
+    editBtn.innerHTML = '<i class="fas fa-edit mr-1"></i>编辑';
+    editBtn.onclick = editRefinedRequirement;
+  }
+}
+
+// 评估生成的代码
+async function evaluateResults(generateResult) {
+  try {
+    const language = document.getElementById("language").value;
+    const artifacts = generateResult.artifacts || [];
+    
+    if (artifacts.length === 0) {
+      console.warn('没有找到代码工件进行评估');
+      return null;
+    }
+    
+    // 构建评估请求
+    const evalBody = { 
+      session_id: generateResult.session_id, 
+      artifacts: artifacts.map(a => ({...a, _code: a.code})), 
+      tests_code: generateResult.tests_code, 
+      language 
+    };
+    
+    console.log('准备发送评测请求:', evalBody);
+    
+    const evalResponse = await fetch(API_BASE + "/api/v1/evaluation/evaluate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(evalBody)
+    });
+    
+    if (!evalResponse.ok) {
+      throw new Error(`评测失败: ${evalResponse.status} ${evalResponse.statusText}`);
+    }
+    
+    const evalResult = await evalResponse.json();
+    console.log('评测完成:', evalResult);
+    
+    // 为结果添加代码内容
+    if (evalResult.results) {
+      evalResult.results.forEach((r, i) => { 
+        if (artifacts[i]) {
+          r._code = artifacts[i].code; 
+        }
+      });
+    }
+    
+    return evalResult;
+    
+  } catch (error) {
+    console.error('评估失败:', error);
+    return null;
+  }
+}
+
+// 继续生成代码（使用当前的优化需求）
+async function continueGenerate() {
+  console.log('🎯 点击了继续生成按钮');
+  
+  if (!window.refinedRequirementData) {
+    alert('没有可用的优化需求');
+    return;
+  }
+  
+  const language = document.getElementById("language").value;
+  const extra = document.getElementById("extra").value.trim();
+  
+  // 获取当前的需求内容（可能已被编辑）
+  const currentRequirement = window.refinedRequirementData.refined_requirement;
+  
+  // 显示加载状态
+  const continueBtn = document.getElementById('continueGenerateBtn');
+  const originalText = continueBtn.innerHTML;
+  continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>代码生成中...';
+  continueBtn.disabled = true;
+  
+  try {
+    console.log('🔧 开始基于优化需求生成代码...');
+    
+    // 获取选中的模型提供者
+    const selectedProviders = Array.from(document.querySelectorAll('.provider-checkbox:checked')).map(cb => cb.value);
+    
+    if (selectedProviders.length === 0) {
+      throw new Error('请至少选择一个AI模型');
+    }
+    
+    // 使用优化后的需求生成代码
+    const generateResponse = await fetch(API_BASE + "/api/v1/generation/generate", {
+      method: "POST", 
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        requirement: currentRequirement,  // 使用优化后的需求
+        language: language,
+        extra_directives: extra,
+        providers: selectedProviders
+      })
+    });
+    
+    if (!generateResponse.ok) {
+      throw new Error(`代码生成失败: ${generateResponse.status} ${generateResponse.statusText}`);
+    }
+    
+    const generateResult = await generateResponse.json();
+    console.log('✅ 代码生成完成:', generateResult);
+    
+    // 显示测试用例
+    if (generateResult.tests_code) {
+      displayTests(generateResult.tests_code);
+    }
+    
+    // 自动评估代码
+    const evalResult = await evaluateResults(generateResult);
+    
+    // 显示生成结果
+    if (evalResult && evalResult.results) {
+      displayResults(evalResult.results, evalResult.best);
+    }
+    
+    showNotification('代码生成完成！', 'success');
+    
+  } catch (error) {
+    console.error('❌ 继续生成失败:', error);
+    showNotification(`生成失败: ${error.message}`, 'error');
+  } finally {
+    continueBtn.innerHTML = originalText;
+    continueBtn.disabled = false;
+  }
+}
+
+// 切换优化需求的显示/隐藏
+function toggleRefinedRequirement() {
+  const display = document.getElementById('refinedRequirementDisplay');
+  if (display) {
+    const content = display.querySelector('.bg-white');
+    const button = display.querySelector('[onclick="toggleRefinedRequirement()"]');
+    const icon = button.querySelector('i');
+    
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+      icon.className = 'fas fa-eye-slash mr-1';
+      button.innerHTML = '<i class="fas fa-eye-slash mr-1"></i>收起';
+    } else {
+      content.style.display = 'none';
+      icon.className = 'fas fa-eye mr-1';
+      button.innerHTML = '<i class="fas fa-eye mr-1"></i>展开';
+    }
+  }
+}
+
+// 简单的通知功能
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg z-50 transition-opacity';
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 300);
+  }, 2000);
+}
+
 // 初始化新功能的事件监听器
 document.addEventListener('DOMContentLoaded', function() {
   console.log('🚀 DOM加载完成，开始绑定事件监听器...');
@@ -1328,6 +1835,13 @@ document.addEventListener('DOMContentLoaded', function() {
   if (runBtn) {
     runBtn.addEventListener('click', generateCode);
     console.log('✅ 生成按钮事件已绑定');
+  }
+  
+  // 专业生成按钮事件
+  const professionalRunBtn = document.getElementById('professionalRunBtn');
+  if (professionalRunBtn) {
+    professionalRunBtn.addEventListener('click', professionalGenerate);
+    console.log('✅ 专业生成按钮事件已绑定');
   }
   
   // 历史记录按钮

@@ -102,6 +102,9 @@ Requirement:
                 logger.warning(
                     f"{self.name} API调用失败 (尝试 {attempt + 1}/{max_retries}): {e}"
                 )
+                # 添加更详细的错误信息
+                if hasattr(e, 'response') and hasattr(e.response, 'text'):
+                    logger.warning(f"响应内容: {e.response.text}")
                 if attempt == max_retries - 1:
                     # 最后一次尝试失败，返回虚拟代码
                     logger.error(f"{self.name} API调用最终失败，使用虚拟代码")

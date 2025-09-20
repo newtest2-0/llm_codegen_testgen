@@ -6,6 +6,7 @@ import httpx
 import logging
 from typing import Dict, Any
 from .base import ProviderBase
+from ..api_key_storage import api_key_storage
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +23,9 @@ class OpenAICompatibleProvider(ProviderBase):
         Returns:
             生成的代码
         """
-        base_url = os.environ.get(self.base_url_env, "https://api.openai.com/v1")
-        api_key = os.environ.get(self.api_key_env, "")
+        # 优先从API密钥存储中获取，其次从环境变量获取
+        api_key = api_key_storage.get_api_key(self.name)
+        base_url = api_key_storage.get_base_url(self.name) or os.environ.get(self.base_url_env, "https://api.openai.com/v1")
         
         if not api_key:
             logger.info(f"{self.name}: 未配置API密钥，使用虚拟代码")
