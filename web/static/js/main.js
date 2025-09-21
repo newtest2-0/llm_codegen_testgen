@@ -105,6 +105,11 @@ function displayTests(testsCode) {
   // 显示测试区域
   testsSection.classList.remove('hidden');
   
+  // 更新右侧导航
+  if (typeof RightNavigation !== 'undefined') {
+    RightNavigation.updateNavigationItems();
+  }
+  
   // 滚动到测试区域
   setTimeout(() => {
     testsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -334,7 +339,7 @@ document.getElementById("runBtn").addEventListener("click", async () => {
     ev.results.forEach((r,i)=>{ r._code = artifacts[i]._code; });
 
     const best = ev.best;
-    const winner = document.getElementById("winner");
+    const winner = document.getElementById("winner-section");
     winner.classList.remove("hidden");
     document.getElementById("winnerMeta").textContent = JSON.stringify(best, null, 2);
     document.getElementById("winnerCode").textContent = artifacts.find(a => a.provider===best.provider)._code;
@@ -342,7 +347,12 @@ document.getElementById("runBtn").addEventListener("click", async () => {
     const html = ev.results
       .sort((a,b)=>b.metrics.aggregate_score - a.metrics.aggregate_score)
       .map(card).join("\\n");
-    document.getElementById("results").innerHTML = html;
+    document.getElementById("results-section").innerHTML = html;
+    
+    // 更新快速导航
+    if (typeof QuickNavigation !== 'undefined') {
+      QuickNavigation.updateNavigationItems();
+    }
     
     console.log('✅ 完整流程执行成功！');
     
@@ -440,25 +450,7 @@ function initPageAnimations() {
   });
 }
 
-// 等待DOM加载完成后添加功能
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM加载完成，开始初始化...');
-  addSelectAllButton();
-  initPageAnimations();
-  initCopyTestsButton();
-  
-  // 延迟执行健康检查，确保所有元素都已渲染
-  setTimeout(() => {
-    console.log('开始执行健康检查...');
-    getHealth();
-  }, 500);
-});
-
-// 页面完全加载后也执行一次
-window.addEventListener('load', function() {
-  console.log('页面完全加载，再次执行健康检查...');
-  setTimeout(getHealth, 1000);
-});
+// 旧的初始化代码已移动到下面的统一初始化函数中
 
 // ===========================================
 // 新增功能：历史记录、导出代码、设置
@@ -1468,7 +1460,7 @@ async function professionalGenerate() {
     ev.results.forEach((r,i)=>{ r._code = artifacts[i]._code; });
 
     const best = ev.best;
-    const winner = document.getElementById("winner");
+    const winner = document.getElementById("winner-section");
     winner.classList.remove("hidden");
     document.getElementById("winnerMeta").textContent = JSON.stringify(best, null, 2);
     document.getElementById("winnerCode").textContent = artifacts.find(a => a.provider===best.provider)._code;
@@ -1476,7 +1468,12 @@ async function professionalGenerate() {
     const html = ev.results
       .sort((a,b)=>b.metrics.aggregate_score - a.metrics.aggregate_score)
       .map(card).join("\\n");
-    document.getElementById("results").innerHTML = html;
+    document.getElementById("results-section").innerHTML = html;
+    
+    // 更新快速导航
+    if (typeof QuickNavigation !== 'undefined') {
+      QuickNavigation.updateNavigationItems();
+    }
     
     console.log('✅ 专业生成流程完成！');
     
@@ -1826,9 +1823,887 @@ function showNotification(message) {
   }, 2000);
 }
 
-// 初始化新功能的事件监听器
+// 标签页管理器
+const TabManager = {
+  currentTab: 'home',
+  
+  // 初始化标签页功能
+  init: function() {
+    console.log('🏷️ 初始化标签页管理器...');
+    
+    // 绑定标签按钮事件
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tabId = button.getAttribute('data-tab');
+        this.switchTab(tabId);
+      });
+    });
+    
+    // 初始化历史记录标签页内容
+    this.initHistoryTab();
+    
+    // 初始化设置标签页内容
+    this.initSettingsTab();
+    
+    console.log('✅ 标签页管理器初始化完成');
+  },
+  
+  // 切换标签页
+  switchTab: function(tabId) {
+    console.log(`🔄 切换到标签页: ${tabId}`);
+    
+    // 更新当前标签
+    this.currentTab = tabId;
+    
+    // 更新标签按钮状态
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.getAttribute('data-tab') === tabId) {
+        btn.classList.add('active');
+      }
+    });
+    
+    // 切换标签内容
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.add('hidden');
+      content.classList.remove('active');
+    });
+    
+    const targetTab = document.getElementById(tabId + 'Tab');
+    if (targetTab) {
+      targetTab.classList.remove('hidden');
+      targetTab.classList.add('active');
+      
+      // 根据不同标签页执行特定初始化
+      this.onTabSwitch(tabId);
+      
+      // 控制右侧导航的显示（仅在代码生成页面显示）
+      if (typeof RightNavigation !== 'undefined') {
+        RightNavigation.toggleVisibility(tabId === 'home');
+      }
+    }
+  },
+  
+  // 标签页切换后的回调
+  onTabSwitch: function(tabId) {
+    switch(tabId) {
+      case 'history':
+        this.refreshHistoryContent();
+        break;
+      case 'export':
+        this.refreshExportContent();
+        break;
+      case 'settings':
+        this.refreshSettingsContent();
+        break;
+    }
+  },
+  
+  // 初始化历史记录标签页
+  initHistoryTab: function() {
+    // 清空全部历史记录按钮
+    const clearAllBtn = document.getElementById('clearAllHistory');
+    if (clearAllBtn) {
+      clearAllBtn.addEventListener('click', () => {
+        if (confirm('确定要清空所有历史记录吗？此操作不可撤销。')) {
+          Storage.clearHistory();
+          this.refreshHistoryContent();
+          showNotification('所有历史记录已清空');
+        }
+      });
+    }
+    
+    // 搜索功能
+    const searchInput = document.getElementById('historySearch');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        this.filterHistory(e.target.value);
+      });
+    }
+  },
+  
+  // 初始化设置标签页
+  initSettingsTab: function() {
+    // 保存设置按钮
+    const saveBtn = document.getElementById('saveSettingsTab');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        this.saveTabSettings();
+      });
+    }
+    
+    // 重置设置按钮
+    const resetBtn = document.getElementById('resetSettingsTab');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        if (confirm('确定要重置所有设置吗？')) {
+          this.resetTabSettings();
+        }
+      });
+    }
+    
+    // 导出按钮
+    const exportBtn = document.getElementById('exportNowBtn');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        this.executeExport();
+      });
+    }
+  },
+  
+  // 刷新历史记录内容
+  refreshHistoryContent: function() {
+    const historyList = document.getElementById('historyListContent');
+    const historyCount = document.getElementById('historyCount');
+    
+    if (!historyList || !historyCount) return;
+    
+    const history = Storage.getHistory();
+    historyCount.textContent = `共 ${history.length} 条记录`;
+    
+    if (history.length === 0) {
+      historyList.innerHTML = `
+        <div class="text-center py-12 text-gray-500">
+          <i class="fas fa-history text-4xl mb-4 opacity-50"></i>
+          <p>暂无历史记录</p>
+          <p class="text-sm mt-2">生成代码后将自动保存到历史记录</p>
+        </div>
+      `;
+    } else {
+      historyList.innerHTML = history.map(item => this.createHistoryItem(item)).join('');
+    }
+  },
+  
+  // 创建历史记录项
+  createHistoryItem: function(item) {
+    const date = new Date(item.timestamp).toLocaleString('zh-CN');
+    const resultsCount = item.results ? item.results.length : 0;
+    
+    return `
+      <div class="surface-card rounded-lg p-4 hover:shadow-md transition-all duration-200">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">${item.language}</span>
+              <span class="text-xs text-gray-500">${date}</span>
+            </div>
+            <p class="text-gray-700 mb-3 line-clamp-2">${item.requirement}</p>
+            <div class="flex items-center gap-4 text-xs text-gray-500">
+              <span><i class="fas fa-robot mr-1"></i>${item.providers?.length || 0} 个模型</span>
+              <span><i class="fas fa-code mr-1"></i>${resultsCount} 个结果</span>
+              ${item.testsCode ? '<span><i class="fas fa-flask mr-1"></i>包含测试</span>' : ''}
+            </div>
+          </div>
+          <div class="flex items-center gap-2 ml-4">
+            <button onclick="TabManager.loadHistoryItem(${item.id})" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors">
+              <i class="fas fa-redo mr-1"></i>重新生成
+            </button>
+            <button onclick="TabManager.deleteHistoryItem(${item.id})" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition-colors">
+              <i class="fas fa-trash mr-1"></i>删除
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+  
+  // 加载历史记录项
+  loadHistoryItem: function(id) {
+    const history = Storage.getHistory();
+    const item = history.find(h => h.id === id);
+    
+    if (item) {
+      // 切换到代码生成标签页
+      this.switchTab('home');
+      
+      // 填充表单
+      setTimeout(() => {
+        document.getElementById('requirement').value = item.requirement;
+        document.getElementById('language').value = item.language;
+        
+        // 选择对应的模型
+        if (item.providers) {
+          const checkboxes = document.querySelectorAll('.provider-checkbox');
+          checkboxes.forEach(checkbox => {
+            checkbox.checked = item.providers.includes(checkbox.value);
+          });
+        }
+        
+        showNotification('历史记录已加载到代码生成页面');
+      }, 300);
+    }
+  },
+  
+  // 删除历史记录项
+  deleteHistoryItem: function(id) {
+    if (confirm('确定要删除这条历史记录吗？')) {
+      Storage.deleteHistory(id);
+      this.refreshHistoryContent();
+      showNotification('历史记录已删除');
+    }
+  },
+  
+  // 过滤历史记录
+  filterHistory: function(searchTerm) {
+    const history = Storage.getHistory();
+    const filtered = history.filter(item => 
+      item.requirement.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.language.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    const historyList = document.getElementById('historyListContent');
+    if (historyList) {
+      if (filtered.length === 0) {
+        historyList.innerHTML = `
+          <div class="text-center py-12 text-gray-500">
+            <i class="fas fa-search text-4xl mb-4 opacity-50"></i>
+            <p>未找到匹配的历史记录</p>
+          </div>
+        `;
+      } else {
+        historyList.innerHTML = filtered.map(item => this.createHistoryItem(item)).join('');
+      }
+    }
+  },
+  
+  // 刷新导出内容
+  refreshExportContent: function() {
+    // 检查是否有可导出的内容
+    const hasResults = document.getElementById('results')?.children.length > 0;
+    const exportBtn = document.getElementById('exportNowBtn');
+    
+    if (exportBtn) {
+      if (hasResults) {
+        exportBtn.disabled = false;
+        exportBtn.innerHTML = '<i class="fas fa-download mr-2"></i>立即导出';
+      } else {
+        exportBtn.disabled = true;
+        exportBtn.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>暂无可导出内容';
+      }
+    }
+  },
+  
+  // 刷新设置内容
+  refreshSettingsContent: function() {
+    const settings = Storage.getSettings();
+    
+    // 加载API配置列表
+    this.loadApiConfigList();
+    
+    // 填充系统偏好设置
+    const defaultLangSelect = document.getElementById('defaultLanguageTab');
+    const autoSaveCheck = document.getElementById('autoSaveHistoryTab');
+    const notificationsCheck = document.getElementById('showNotificationsTab');
+    
+    if (defaultLangSelect) defaultLangSelect.value = settings.defaultLanguage || 'python';
+    if (autoSaveCheck) autoSaveCheck.checked = settings.autoSaveHistory !== false;
+    if (notificationsCheck) notificationsCheck.checked = settings.showNotifications !== false;
+  },
+  
+  // 加载API配置列表
+  loadApiConfigList: function() {
+    const apiList = document.getElementById('apiConfigList');
+    if (!apiList) return;
+    
+    const providers = [
+      { id: 'openai', name: 'OpenAI', icon: '🤖', desc: 'GPT-4 系列模型' },
+      { id: 'deepseek', name: 'DeepSeek', icon: '🔍', desc: 'DeepSeek Chat 模型' },
+      { id: 'claude', name: 'Claude', icon: '🎭', desc: 'Anthropic Claude 3.5' },
+      { id: 'gemini', name: 'Gemini', icon: '💎', desc: 'Google Gemini 1.5' },
+      { id: 'qwen', name: '通义千问', icon: '🌟', desc: '阿里云 Qwen Plus' },
+      { id: 'baichuan', name: '百川智能', icon: '🏔️', desc: 'Baichuan4 模型' },
+      { id: 'chatglm', name: 'ChatGLM', icon: '💬', desc: '智谱 GLM-4 Plus' },
+      { id: 'llama', name: 'LLaMA', icon: '🦙', desc: 'Meta LLaMA 3.1' }
+    ];
+    
+    const settings = Storage.getSettings();
+    
+    apiList.innerHTML = providers.map(provider => {
+      const hasKey = settings[`${provider.id}Key`] && settings[`${provider.id}Key`].trim();
+      const isLocal = provider.id === 'llama';
+      
+      return `
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+              <span class="text-lg">${provider.icon}</span>
+            </div>
+            <div>
+              <div class="font-medium text-gray-900">${provider.name}</div>
+              <div class="text-sm text-gray-500">${provider.desc}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            ${isLocal ? 
+              '<span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-600">本地模型</span>' :
+              `<span class="text-xs px-2 py-1 rounded-full ${hasKey ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'}">${hasKey ? '已配置' : '未配置'}</span>`
+            }
+            ${!isLocal ? 
+              `<button onclick="TabManager.configureApi('${provider.id}')" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors">
+                ${hasKey ? '更新' : '配置'}
+              </button>` : ''
+            }
+          </div>
+        </div>
+      `;
+    }).join('');
+  },
+  
+  // 配置API
+  configureApi: function(providerId) {
+    const key = prompt(`请输入 ${providerId.toUpperCase()} 的API密钥:`);
+    if (key && key.trim()) {
+      const settings = Storage.getSettings();
+      settings[`${providerId}Key`] = key.trim();
+      Storage.saveSettings(settings);
+      this.refreshSettingsContent();
+      showNotification(`${providerId.toUpperCase()} API密钥已保存`);
+    }
+  },
+  
+  // 保存标签页设置
+  saveTabSettings: function() {
+    const settings = Storage.getSettings();
+    
+    const defaultLang = document.getElementById('defaultLanguageTab')?.value;
+    const autoSave = document.getElementById('autoSaveHistoryTab')?.checked;
+    const notifications = document.getElementById('showNotificationsTab')?.checked;
+    
+    if (defaultLang) settings.defaultLanguage = defaultLang;
+    if (autoSave !== undefined) settings.autoSaveHistory = autoSave;
+    if (notifications !== undefined) settings.showNotifications = notifications;
+    
+    Storage.saveSettings(settings);
+    
+    // 同步到代码生成页面
+    if (defaultLang) {
+      const mainLangSelect = document.getElementById('language');
+      if (mainLangSelect) mainLangSelect.value = defaultLang;
+    }
+    
+    showNotification('设置已保存');
+  },
+  
+  // 重置标签页设置
+  resetTabSettings: function() {
+    Storage.saveSettings({});
+    this.refreshSettingsContent();
+    showNotification('设置已重置');
+  },
+  
+  // 执行导出
+  executeExport: function() {
+    try {
+      ExportManager.collectCurrentData();
+      ExportManager.export();
+      showNotification('导出完成！');
+    } catch (error) {
+      console.error('导出失败:', error);
+      showNotification('导出失败，请重试', 'error');
+    }
+  }
+};
+
+// 右侧导航管理器
+const RightNavigation = {
+  sections: ['requirements-section', 'models-section', 'tests-section', 'winner-section', 'results-section'],
+  isExpanded: false,
+  
+  // 初始化右侧导航
+  init: function() {
+    console.log('🧭 初始化右侧导航...');
+    
+    // 绑定展开/收起按钮事件
+    const navToggle = document.getElementById('navToggle');
+    const navClose = document.getElementById('navClose');
+    const rightNav = document.getElementById('rightNavigation');
+    
+    if (navToggle) {
+      console.log('✅ 找到导航切换按钮，绑定点击事件');
+      navToggle.addEventListener('click', (e) => {
+        console.log('🖱️ 导航切换按钮被点击');
+        e.preventDefault();
+        e.stopPropagation();
+        this.toggleNavigation();
+      });
+    } else {
+      console.error('❌ 未找到导航切换按钮 #navToggle');
+    }
+    
+    if (navClose) {
+      navClose.addEventListener('click', () => {
+        this.closeNavigation();
+      });
+    }
+    
+    // 点击导航外部区域关闭
+    document.addEventListener('click', (e) => {
+      if (this.isExpanded && rightNav && !rightNav.contains(e.target)) {
+        this.closeNavigation();
+      }
+    });
+    
+    // 绑定导航链接点击事件
+    document.querySelectorAll('#rightNavigation .nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href').substring(1);
+        this.scrollToSection(targetId);
+        // 跳转后关闭导航
+        setTimeout(() => {
+          this.closeNavigation();
+        }, 500);
+      });
+    });
+    
+    // 监听滚动事件，更新当前活跃区域
+    window.addEventListener('scroll', () => {
+      this.updateActiveSection();
+    });
+    
+    // 监听窗口大小变化
+    window.addEventListener('resize', () => {
+      this.handleResize();
+    });
+    
+    // 监听缩放变化（处理Ctrl+/Ctrl-缩放）
+    window.addEventListener('wheel', (e) => {
+      if (e.ctrlKey) {
+        // 延迟执行以等待缩放完成
+        setTimeout(() => {
+          this.handleResize();
+        }, 100);
+      }
+    }, { passive: true });
+    
+    // 监听ESC键关闭导航
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.isExpanded) {
+        this.closeNavigation();
+      }
+    });
+    
+    console.log('✅ 右侧导航初始化完成');
+    
+    // 确保在代码生成页面显示导航，但初始状态为收起
+    this.toggleVisibility(true);
+    this.closeNavigation();
+    
+    // 调试信息
+    const debugRightNav = document.getElementById('rightNavigation');
+    if (debugRightNav) {
+      console.log('🔍 右侧导航元素已找到');
+      console.log('📍 导航位置:', debugRightNav.getBoundingClientRect());
+      console.log('👁️ 导航可见性:', window.getComputedStyle(debugRightNav).display);
+    } else {
+      console.error('❌ 未找到右侧导航元素');
+    }
+  },
+  
+  // 滚动到操作按钮区域
+  scrollToActionButtons: function() {
+    const actionSection = document.getElementById('action-buttons-section');
+    if (actionSection) {
+      const offsetTop = actionSection.offsetTop - 150; // 预留更多空间
+      
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+      
+      // 高亮整个操作区域
+      setTimeout(() => {
+        this.highlightSection(actionSection);
+      }, 500);
+    }
+  },
+  
+  // 高亮按钮
+  highlightButton: function(button) {
+    // 移除之前的高亮
+    document.querySelectorAll('.button-highlight').forEach(el => {
+      el.classList.remove('button-highlight');
+    });
+    
+    // 添加按钮高亮效果
+    button.classList.add('button-highlight');
+    
+    // 添加脉冲动画
+    button.style.animation = 'buttonPulse 2s ease-in-out';
+    
+    // 3秒后移除高亮
+    setTimeout(() => {
+      button.classList.remove('button-highlight');
+      button.style.animation = '';
+    }, 3000);
+  },
+  
+  // 切换导航展开/收起状态
+  toggleNavigation: function() {
+    const rightNav = document.getElementById('rightNavigation');
+    if (rightNav) {
+      if (this.isExpanded) {
+        this.closeNavigation();
+      } else {
+        this.openNavigation();
+      }
+    }
+  },
+  
+  // 打开导航
+  openNavigation: function() {
+    const rightNav = document.getElementById('rightNavigation');
+    const trigger = document.getElementById('navTrigger');
+    
+    if (rightNav && trigger) {
+      rightNav.classList.add('expanded');
+      trigger.classList.add('expanded');
+      rightNav.style.transform = 'translateY(-50%) translateX(0)';
+      rightNav.style.visibility = 'visible';
+      rightNav.style.opacity = '1';
+      this.isExpanded = true;
+      
+      // 更新导航项状态
+      this.updateNavigationItems();
+      this.updateActiveSection();
+      console.log('📖 导航已展开');
+    }
+  },
+  
+  // 关闭导航
+  closeNavigation: function() {
+    const rightNav = document.getElementById('rightNavigation');
+    const trigger = document.getElementById('navTrigger');
+    
+    if (rightNav && trigger) {
+      rightNav.classList.remove('expanded');
+      trigger.classList.remove('expanded');
+      rightNav.style.transform = 'translateY(-50%) translateX(100%)';
+      rightNav.style.visibility = 'hidden';
+      rightNav.style.opacity = '0';
+      this.isExpanded = false;
+      console.log('📕 导航已关闭');
+    }
+  },
+  
+  // 滚动到指定区域
+  scrollToSection: function(sectionId) {
+    const targetElement = document.getElementById(sectionId);
+    if (targetElement) {
+      const offsetTop = targetElement.offsetTop - 120; // 预留顶部导航栏空间
+      
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+      
+      // 添加临时高亮效果
+      this.highlightSection(targetElement);
+    }
+  },
+  
+  // 高亮目标区域
+  highlightSection: function(element) {
+    // 移除之前的高亮
+    document.querySelectorAll('.section-highlight').forEach(el => {
+      el.classList.remove('section-highlight');
+    });
+    
+    // 添加高亮类
+    element.classList.add('section-highlight');
+    
+    // 3秒后移除高亮
+    setTimeout(() => {
+      element.classList.remove('section-highlight');
+    }, 3000);
+  },
+  
+  // 更新当前活跃区域
+  updateActiveSection: function() {
+    const scrollPosition = window.scrollY + 200; // 偏移量
+    let currentSection = '';
+    
+    // 检查每个区域是否在视口中
+    this.sections.forEach(sectionId => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const sectionTop = element.offsetTop;
+        const sectionBottom = sectionTop + element.offsetHeight;
+        
+        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+          currentSection = sectionId;
+        }
+      }
+    });
+    
+    // 更新导航链接的活跃状态
+    document.querySelectorAll('#quickNavigation .nav-link').forEach(link => {
+      const targetId = link.getAttribute('href').substring(1);
+      if (targetId === currentSection) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+    
+    // 更新进度条
+    this.updateProgress();
+  },
+  
+  // 更新页面进度
+  updateProgress: function() {
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight - windowHeight;
+    const scrollTop = window.scrollY;
+    const progress = Math.min(100, Math.max(0, (scrollTop / documentHeight) * 100));
+    
+    const progressBar = document.getElementById('pageProgress');
+    const progressPercentage = document.getElementById('progressPercentage');
+    
+    if (progressBar) {
+      progressBar.style.width = progress + '%';
+    }
+    
+    if (progressPercentage) {
+      progressPercentage.textContent = Math.round(progress) + '%';
+    }
+  },
+  
+  // 处理窗口大小变化
+  handleResize: function() {
+    // 在小屏幕上自动关闭导航
+    if (window.innerWidth < 768 && this.isExpanded) {
+      this.closeNavigation();
+    }
+    
+    // 确保导航始终在正确位置（处理缩放情况）
+    const navigation = document.getElementById('rightNavigation');
+    if (navigation && navigation.style.display !== 'none') {
+      // 重新应用定位，确保在任何缩放级别都易于识别
+      navigation.style.setProperty('position', 'fixed', 'important');
+      navigation.style.setProperty('right', '60px', 'important');
+      navigation.style.setProperty('top', '50%', 'important');
+      navigation.style.setProperty('transform', 'translateY(-50%)', 'important');
+    }
+  },
+  
+  // 显示/隐藏右侧导航（仅在代码生成标签页显示）
+  toggleVisibility: function(show) {
+    const trigger = document.getElementById('navTrigger');
+    const navigation = document.getElementById('rightNavigation');
+    
+    if (trigger && navigation) {
+      if (show) {
+        trigger.style.display = 'block';
+        // 导航面板保持隐藏，等待用户点击触发按钮
+      } else {
+        trigger.style.display = 'none';
+        // 切换标签页时关闭导航
+        this.closeNavigation();
+      }
+    }
+  },
+  
+  // 更新导航项的可见性（根据内容是否存在）
+  updateNavigationItems: function() {
+    const navLinks = {
+      'tests-section': document.getElementById('tests-section'),
+      'winner-section': document.getElementById('winner-section'),
+      'results-section': document.getElementById('results-section')
+    };
+    
+    Object.entries(navLinks).forEach(([sectionId, element]) => {
+      const link = document.querySelector(`#rightNavigation a[href="#${sectionId}"]`);
+      if (link) {
+        const hasContent = element && !element.classList.contains('hidden') && element.children.length > 0;
+        
+        if (hasContent) {
+          link.style.display = 'flex';
+          link.style.opacity = '1';
+          link.style.pointerEvents = 'auto';
+        } else {
+          link.style.opacity = '0.5';
+          link.style.pointerEvents = 'none';
+        }
+      }
+    });
+  },
+  
+  // 跳转到操作按钮区域
+  scrollToActionButtons: function() {
+    const actionSection = document.getElementById('action-buttons-section');
+    if (actionSection) {
+      const offsetTop = actionSection.offsetTop - 120;
+      
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+      
+      // 高亮操作按钮区域
+      this.highlightSection(actionSection);
+      
+      // 延迟关闭导航，让用户看到跳转效果
+      setTimeout(() => {
+        this.closeNavigation();
+      }, 800);
+    }
+  },
+  
+  // 跳转到专业生成按钮并高亮
+  scrollToProfessionalGenerate: function() {
+    const actionSection = document.getElementById('action-buttons-section');
+    const professionalBtn = document.getElementById('professionalRunBtn');
+    
+    if (actionSection && professionalBtn) {
+      const offsetTop = actionSection.offsetTop - 120;
+      
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+      
+      // 高亮整个操作区域
+      this.highlightSection(actionSection);
+      
+      // 特别高亮专业生成按钮
+      setTimeout(() => {
+        professionalBtn.classList.add('button-highlight');
+        setTimeout(() => {
+          professionalBtn.classList.remove('button-highlight');
+        }, 2000);
+      }, 500);
+      
+      // 延迟关闭导航
+      setTimeout(() => {
+        this.closeNavigation();
+      }, 800);
+      
+      console.log('🎯 跳转到专业生成按钮');
+    }
+  },
+  
+  // 滚动到页面顶部
+  scrollToTop: function() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  },
+
+  // 初始化搜索功能
+  initSearch: function() {
+    const searchInput = document.getElementById('navSearch');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        this.filterNavigation(e.target.value);
+      });
+    }
+  },
+
+  // 过滤导航项
+  filterNavigation: function(query) {
+    const navSteps = document.querySelectorAll('.nav-step');
+    const actionBtns = document.querySelectorAll('.action-btn');
+    const toolBtns = document.querySelectorAll('.tool-btn');
+    
+    const searchTerm = query.toLowerCase();
+    
+    // 过滤工作流程步骤
+    navSteps.forEach(step => {
+      const text = step.textContent.toLowerCase();
+      if (text.includes(searchTerm)) {
+        step.style.display = 'flex';
+      } else {
+        step.style.display = 'none';
+      }
+    });
+    
+    // 过滤快速操作按钮
+    actionBtns.forEach(btn => {
+      const text = btn.textContent.toLowerCase();
+      if (text.includes(searchTerm)) {
+        btn.style.display = 'flex';
+      } else {
+        btn.style.display = 'none';
+      }
+    });
+    
+    // 过滤工具按钮
+    toolBtns.forEach(btn => {
+      const text = btn.textContent.toLowerCase();
+      if (text.includes(searchTerm)) {
+        btn.style.display = 'flex';
+      } else {
+        btn.style.display = 'none';
+      }
+    });
+  },
+
+  // 更新时间戳
+  updateTimestamp: function() {
+    const timestamp = document.getElementById('navTimestamp');
+    if (timestamp) {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('zh-CN', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      timestamp.textContent = timeString + ' 更新';
+    }
+  },
+
+  // 标记步骤为已完成
+  markStepCompleted: function(stepNumber) {
+    const step = document.querySelector(`[data-step="${stepNumber}"]`);
+    if (step) {
+      step.classList.add('completed');
+      step.classList.remove('active');
+    }
+  },
+
+  // 标记步骤为激活状态
+  markStepActive: function(stepNumber) {
+    // 清除所有激活状态
+    document.querySelectorAll('.nav-step').forEach(step => {
+      step.classList.remove('active');
+    });
+    
+    // 设置当前步骤为激活
+    const step = document.querySelector(`[data-step="${stepNumber}"]`);
+    if (step) {
+      step.classList.add('active');
+    }
+  }
+};
+
+// 统一的初始化函数
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('🚀 DOM加载完成，开始绑定事件监听器...');
+  console.log('🚀 DOM加载完成，开始统一初始化...');
+  
+  // 旧的初始化功能
+  addSelectAllButton();
+  initPageAnimations();
+  initCopyTestsButton();
+  
+  // 初始化标签页管理器
+  TabManager.init();
+  
+  // 初始化右侧导航
+  RightNavigation.init();
+  
+  // 初始化搜索功能
+  RightNavigation.initSearch();
+  
+  // 更新时间戳
+  RightNavigation.updateTimestamp();
+  
+  // 延迟执行健康检查，确保所有元素都已渲染
+  setTimeout(() => {
+    console.log('开始执行健康检查...');
+    getHealth();
+  }, 500);
   
   // 生成按钮事件
   const runBtn = document.getElementById('runBtn');
@@ -1844,44 +2719,10 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ 专业生成按钮事件已绑定');
   }
   
-  // 历史记录按钮
-  const historyBtn = document.getElementById('historyBtn');
-  if (historyBtn) {
-    historyBtn.addEventListener('click', () => {
-      console.log('🕐 历史记录按钮被点击');
-      console.log('检查HistoryManager:', typeof HistoryManager);
-      console.log('检查HistoryManager.show:', typeof HistoryManager.show);
-      try {
-        HistoryManager.show();
-      } catch (error) {
-        console.error('❌ 历史记录功能错误:', error);
-        alert('历史记录功能出错：' + error.message);
-      }
-    });
-    console.log('✅ 历史记录按钮事件已绑定');
-  } else {
-    console.error('❌ 找不到历史记录按钮');
-  }
-  
+  // 保留模态框相关功能，以便向后兼容
   const closeHistoryModal = document.getElementById('closeHistoryModal');
   if (closeHistoryModal) {
     closeHistoryModal.addEventListener('click', () => HistoryManager.hide());
-  }
-  
-  // 导出按钮
-  const exportBtn = document.getElementById('exportBtn');
-  if (exportBtn) {
-    exportBtn.addEventListener('click', () => {
-      console.log('📥 导出按钮被点击');
-      try {
-        ExportManager.show();
-      } catch (error) {
-        console.error('❌ 导出功能错误:', error);
-      }
-    });
-    console.log('✅ 导出按钮事件已绑定');
-  } else {
-    console.error('❌ 找不到导出按钮');
   }
   
   const closeExportModal = document.getElementById('closeExportModal');
@@ -1897,22 +2738,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const cancelExport = document.getElementById('cancelExport');
   if (cancelExport) {
     cancelExport.addEventListener('click', () => ExportManager.hide());
-  }
-  
-  // 设置按钮
-  const settingsBtn = document.getElementById('settingsBtn');
-  if (settingsBtn) {
-    settingsBtn.addEventListener('click', () => {
-      console.log('⚙️ 设置按钮被点击');
-      try {
-        SettingsManager.show();
-      } catch (error) {
-        console.error('❌ 设置功能错误:', error);
-      }
-    });
-    console.log('✅ 设置按钮事件已绑定');
-  } else {
-    console.error('❌ 找不到设置按钮');
   }
   
   const closeSettingsModal = document.getElementById('closeSettingsModal');
