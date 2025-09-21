@@ -6,13 +6,111 @@ import asyncio
 import logging
 from fastapi import APIRouter, HTTPException, Request
 from typing import List
+from pydantic import BaseModel
 
 from models import GenerateRequest, GenerateResponse, CodeArtifact
 from core.providers import ProviderManager
 from core.evaluators.test_generator import IntelligentTestGenerator
 
 logger = logging.getLogger(__name__)
+class RefineRequirementRequest(BaseModel):
+    """需求优化请求"""
+    requirement: str
+    language: str = "python"
+    extra_directives: str = None
+    preferred_refiner: str = None  # 可选：指定用于需求优化的模型
+
+class RefineRequirementResponse(BaseModel):
+    """需求优化响应"""
+    refined_requirement: str
+    original_requirement: str
+    refinement_provider: str
+
 router = APIRouter()
+
+@router.post("/refine-requirement", response_model=RefineRequirementResponse)
+async def refine_requirement(request: RefineRequirementRequest, req: Request):
+    """
+    优化需求描述，使其更加专业和详细
+    
+    Args:
+        request: 需求优化请求
+        req: FastAPI请求对象
+        
+    Returns:
+        优化后的需求描述
+    """
+    # 获取提供者管理器
+    provider_manager: ProviderManager = req.app.state.provider_manager
+    
+    # 选择用于需求优化的提供者
+    available_providers = provider_manager.get_provider_names()
+    
+    # 如果用户指定了特定的模型，优先使用
+    if request.preferred_refiner and request.preferred_refiner in available_providers:
+        refiner_provider = request.preferred_refiner
+        logger.info(f"使用用户指定的模型进行需求优化: {refiner_provider}")
+    else:
+        # 否则按优先级选择（优先选择GPT-4或Claude等高质量模型）
+        # 可以调整这个列表来改变优先级顺序
+        preferred_providers = ["claude", "deepseek", "openai", "gemini"]  # 例如：Claude优先
+        
+        # 找到第一个可用的优先提供者
+        refiner_provider = None
+        for provider in preferred_providers:
+            if provider in available_providers:
+                refiner_provider = provider
+                break
+        
+        # 如果没有优先提供者，使用第一个可用的
+        if not refiner_provider and available_providers:
+            refiner_provider = available_providers[0]
+    
+    if not refiner_provider:
+        raise HTTPException(status_code=400, detail="没有可用的AI提供者进行需求优化")
+    
+    provider = provider_manager.get_provider(refiner_provider)
+    
+    # 构建需求优化的提示词
+    refinement_prompt = f"""作为资深技术专家，请将以下用户需求优化为简洁而专业的技术需求：
+
+原始需求：{request.requirement}
+目标语言：{request.language}
+额外要求：{request.extra_directives or "无"}
+
+请输出精炼的技术需求，包含：
+
+**核心功能**：明确要实现的主要功能和预期行为
+
+**技术要点**：
+- 建议的函数/类名称和核心接口
+- 关键参数和返回值类型
+- 必要的异常处理策略
+
+**质量标准**：代码规范、测试要求、性能考量
+
+要求：简洁明了、技术专业、易于理解，避免冗长的格式化文档。直接输出优化需求，无需解释。"""
+
+    try:
+        logger.info(f"使用 {refiner_provider} 进行需求优化...")
+        
+        refined_requirement = await provider.generate_code(
+            requirement=refinement_prompt,
+            language="text",  # 这里是文本生成，不是代码
+            extra_directives="输出详细的技术需求文档"
+        )
+        
+        logger.info(f"✅ 需求优化完成")
+        
+        return RefineRequirementResponse(
+            refined_requirement=refined_requirement,
+            original_requirement=request.requirement,
+            refinement_provider=refiner_provider
+        )
+        
+    except Exception as e:
+        logger.error(f"❌ 需求优化失败: {e}")
+        raise HTTPException(status_code=500, detail=f"需求优化失败: {str(e)}")
 
 @router.post("/generate", response_model=GenerateResponse)
 async def generate_code(request: GenerateRequest, req: Request):
