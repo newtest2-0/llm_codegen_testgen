@@ -9,7 +9,7 @@ from pathlib import Path
 
 def main():
     """启动前端服务器"""
-    PORT = 8081
+    PORT = 8080
     
     # 设置静态文件目录
     web_dir = Path(__file__).parent
