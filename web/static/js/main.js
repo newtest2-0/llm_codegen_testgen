@@ -260,13 +260,13 @@ document.getElementById("runBtn").addEventListener("click", async () => {
   console.log('点击了生成按钮');
   
   // 清空之前的结果
-  const resultsDiv = document.getElementById("results");
-  const winnerDiv = document.getElementById("winner");
+  const resultsDiv = document.getElementById("results-section");
+  const winnerDiv = document.getElementById("winner-section");
   const testsDiv = document.getElementById("testsSection");
   
-  resultsDiv.innerHTML = '';
-  winnerDiv.classList.add('hidden');
-  testsDiv.classList.add('hidden');
+  if (resultsDiv) resultsDiv.innerHTML = '';
+  if (winnerDiv) winnerDiv.classList.add('hidden');
+  if (testsDiv) testsDiv.classList.add('hidden');
   
   const requirement = document.getElementById("requirement").value.trim();
   const language = document.getElementById("language").value;
@@ -679,7 +679,7 @@ const ExportManager = {
   // 显示导出模态框
   show: function() {
     // 检查是否有可导出的数据
-    const results = document.getElementById('results');
+    const results = document.getElementById('results-section');
     if (!results || results.children.length === 0) {
       alert('暂无可导出的代码，请先生成代码。');
       return;
@@ -1240,7 +1240,7 @@ async function generateCode() {
 function displayResults(results, winner) {
   console.log('显示结果:', results, winner);
   
-  const resultsContainer = document.getElementById('results');
+  const resultsContainer = document.getElementById('results-section');
   if (!resultsContainer) return;
   
   // 清空之前的结果
@@ -1414,13 +1414,13 @@ async function professionalGenerate() {
     };
     
     // 清空之前的结果
-    const resultsDiv = document.getElementById("results");
-    const winnerDiv = document.getElementById("winner");
+    const resultsDiv = document.getElementById("results-section");
+    const winnerDiv = document.getElementById("winner-section");
     const testsDiv = document.getElementById("testsSection");
     
-    resultsDiv.innerHTML = '';
-    winnerDiv.classList.add('hidden');
-    testsDiv.classList.add('hidden');
+    if (resultsDiv) resultsDiv.innerHTML = '';
+    if (winnerDiv) winnerDiv.classList.add('hidden');
+    if (testsDiv) testsDiv.classList.add('hidden');
     
     // 调用现有的代码生成流程
     const genResponse = await fetch(API_BASE + "/api/v1/generation/generate", {
@@ -1737,6 +1737,15 @@ async function continueGenerate() {
   try {
     console.log('🔧 开始基于优化需求生成代码...');
     
+    // 清空之前的结果
+    const resultsDiv = document.getElementById("results-section");
+    const winnerDiv = document.getElementById("winner-section");
+    const testsDiv = document.getElementById("testsSection");
+    
+    if (resultsDiv) resultsDiv.innerHTML = '';
+    if (winnerDiv) winnerDiv.classList.add('hidden');
+    if (testsDiv) testsDiv.classList.add('hidden');
+    
     // 获取选中的模型提供者
     const selectedProviders = Array.from(document.querySelectorAll('.provider-checkbox:checked')).map(cb => cb.value);
     
@@ -1773,7 +1782,7 @@ async function continueGenerate() {
     
     // 显示生成结果
     if (evalResult && evalResult.results) {
-      displayResults(evalResult.results, evalResult.best);
+      displayResults(evalResult.results, evalResult.winner);
     }
     
     showNotification('代码生成完成！', 'success');
@@ -2070,7 +2079,7 @@ const TabManager = {
   // 刷新导出内容
   refreshExportContent: function() {
     // 检查是否有可导出的内容
-    const hasResults = document.getElementById('results')?.children.length > 0;
+    const hasResults = document.getElementById('results-section')?.children.length > 0;
     const exportBtn = document.getElementById('exportNowBtn');
     
     if (exportBtn) {
