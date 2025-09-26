@@ -50,7 +50,7 @@ function escapeHtml(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt
 function displayTests(testsCode) {
   console.log('显示测试用例:', testsCode);
   
-  const testsSection = document.getElementById("testsSection");
+  const testsSection = document.getElementById("tests-section");
   const testsCodeElement = document.getElementById("testsCode");
   const testInfo = document.getElementById("testInfo");
   const testStatus = document.getElementById("testStatus");
@@ -68,37 +68,56 @@ function displayTests(testsCode) {
   const testFunctions = testLines.filter(line => line.trim().startsWith('def test_')).length;
   const hasEdgeCases = testsCode.includes('edge') || testsCode.includes('boundary') || testsCode.includes('边界');
   const hasExceptions = testsCode.includes('pytest.raises') || testsCode.includes('Exception') || testsCode.includes('异常');
+  const hasAsserts = testsCode.includes('assert ') || testsCode.includes('assertEqual');
+  const hasSetup = testsCode.includes('setUp') || testsCode.includes('fixture') || testsCode.includes('@');
+  
+  // 分析测试覆盖类型
+  const testTypes = [];
+  if (testsCode.includes('正常') || testsCode.includes('normal') || testsCode.includes('valid')) testTypes.push('正常用例');
+  if (hasEdgeCases) testTypes.push('边界用例');
+  if (hasExceptions) testTypes.push('异常用例');
+  if (testsCode.includes('性能') || testsCode.includes('performance')) testTypes.push('性能测试');
   
   // 更新测试信息
   testInfo.innerHTML = `
     <div class="flex justify-between">
-      <span>生成方式:</span>
+      <span class="text-gray-600">生成方式:</span>
       <span class="font-medium text-blue-600">智能分析代码结构</span>
     </div>
     <div class="flex justify-between">
-      <span>测试框架:</span>
+      <span class="text-gray-600">测试框架:</span>
       <span class="font-medium">pytest</span>
     </div>
     <div class="flex justify-between">
-      <span>测试函数:</span>
+      <span class="text-gray-600">测试函数:</span>
       <span class="font-medium text-green-600">${testFunctions} 个</span>
     </div>
     <div class="flex justify-between">
-      <span>边界测试:</span>
-      <span class="font-medium ${hasEdgeCases ? 'text-green-600' : 'text-gray-400'}">${hasEdgeCases ? '✓ 包含' : '✗ 无'}</span>
+      <span class="text-gray-600">断言检查:</span>
+      <span class="font-medium ${hasAsserts ? 'text-green-600' : 'text-gray-400'}">${hasAsserts ? '✓ 包含' : '✗ 无'}</span>
     </div>
     <div class="flex justify-between">
-      <span>异常测试:</span>
-      <span class="font-medium ${hasExceptions ? 'text-green-600' : 'text-gray-400'}">${hasExceptions ? '✓ 包含' : '✗ 无'}</span>
+      <span class="text-gray-600">测试类型:</span>
+      <span class="font-medium text-blue-600">${testTypes.length > 0 ? testTypes.join(', ') : '基础测试'}</span>
+    </div>
+    <div class="flex justify-between">
+      <span class="text-gray-600">测试覆盖:</span>
+      <span class="font-medium ${testTypes.length >= 3 ? 'text-green-600' : testTypes.length >= 2 ? 'text-yellow-600' : 'text-gray-600'}">${testTypes.length >= 3 ? '全面' : testTypes.length >= 2 ? '良好' : '基础'}</span>
     </div>
   `;
   
   // 更新测试状态
+  const qualityScore = testTypes.length >= 3 ? '优秀' : testTypes.length >= 2 ? '良好' : '基础';
+  const qualityColor = testTypes.length >= 3 ? 'text-green-600' : testTypes.length >= 2 ? 'text-yellow-600' : 'text-blue-600';
+  
   testStatus.innerHTML = `
-    <div class="text-green-600">
+    <div class="${qualityColor}">
       <i class="fas fa-check-circle text-2xl mb-2"></i>
       <p class="font-medium">测试用例生成完成</p>
-      <p class="text-sm text-gray-500 mt-1">包含 ${testFunctions} 个测试函数</p>
+      <p class="text-sm text-gray-500 mt-1">${testFunctions} 个测试函数</p>
+      <div class="mt-2 text-xs">
+        <span class="inline-block px-2 py-1 bg-gray-100 rounded text-gray-700">质量评级: ${qualityScore}</span>
+      </div>
     </div>
   `;
   
@@ -262,7 +281,7 @@ document.getElementById("runBtn").addEventListener("click", async () => {
   // 清空之前的结果
   const resultsDiv = document.getElementById("results-section");
   const winnerDiv = document.getElementById("winner-section");
-  const testsDiv = document.getElementById("testsSection");
+  const testsDiv = document.getElementById("tests-section");
   
   if (resultsDiv) resultsDiv.innerHTML = '';
   if (winnerDiv) winnerDiv.classList.add('hidden');
@@ -1416,7 +1435,7 @@ async function professionalGenerate() {
     // 清空之前的结果
     const resultsDiv = document.getElementById("results-section");
     const winnerDiv = document.getElementById("winner-section");
-    const testsDiv = document.getElementById("testsSection");
+    const testsDiv = document.getElementById("tests-section");
     
     if (resultsDiv) resultsDiv.innerHTML = '';
     if (winnerDiv) winnerDiv.classList.add('hidden');
@@ -1740,7 +1759,7 @@ async function continueGenerate() {
     // 清空之前的结果
     const resultsDiv = document.getElementById("results-section");
     const winnerDiv = document.getElementById("winner-section");
-    const testsDiv = document.getElementById("testsSection");
+    const testsDiv = document.getElementById("tests-section");
     
     if (resultsDiv) resultsDiv.innerHTML = '';
     if (winnerDiv) winnerDiv.classList.add('hidden');
