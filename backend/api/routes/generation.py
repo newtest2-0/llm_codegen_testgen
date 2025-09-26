@@ -72,24 +72,19 @@ async def refine_requirement(request: RefineRequirementRequest, req: Request):
     provider = provider_manager.get_provider(refiner_provider)
     
     # 构建需求优化的提示词
-    refinement_prompt = f"""作为资深技术专家，请将以下用户需求优化为简洁而专业的技术需求：
+    refinement_prompt = f"""请将用户的需求描述优化为更加具体和明确的需求说明：
 
 原始需求：{request.requirement}
 目标语言：{request.language}
 额外要求：{request.extra_directives or "无"}
 
-请输出精炼的技术需求，包含：
+请优化为具体的功能需求描述，要求：
+1. 明确要实现什么功能
+2. 说明具体的输入输出要求
+3. 描述关键的业务逻辑
+4. 指出需要注意的边界条件
 
-**核心功能**：明确要实现的主要功能和预期行为
-
-**技术要点**：
-- 建议的函数/类名称和核心接口
-- 关键参数和返回值类型
-- 必要的异常处理策略
-
-**质量标准**：代码规范、测试要求、性能考量
-
-要求：简洁明了、技术专业、易于理解，避免冗长的格式化文档。直接输出优化需求，无需解释。"""
+输出简洁的功能需求描述，用自然语言表达，不需要技术框架或格式化文档。"""
 
     try:
         logger.info(f"使用 {refiner_provider} 进行需求优化...")
@@ -97,7 +92,7 @@ async def refine_requirement(request: RefineRequirementRequest, req: Request):
         refined_requirement = await provider.generate_code(
             requirement=refinement_prompt,
             language="text",  # 这里是文本生成，不是代码
-            extra_directives="输出详细的技术需求文档"
+            extra_directives="输出简洁明确的功能需求描述，避免复杂的技术文档格式"
         )
         
         logger.info(f"✅ 需求优化完成")
