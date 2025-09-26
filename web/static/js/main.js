@@ -1506,8 +1506,47 @@ async function professionalGenerate() {
   }
 }
 
+// 过滤需求描述中的代码部分
+function filterCodeFromRequirement(text) {
+  // 移除代码块（```包围的内容）
+  let filtered = text.replace(/```[\s\S]*?```/g, '');
+  
+  // 移除行内代码（`包围的内容）
+  filtered = filtered.replace(/`[^`\n]+`/g, '');
+  
+  // 移除可能的函数调用格式
+  filtered = filtered.replace(/\w+\([^)]*\)/g, '');
+  
+  // 移除类名格式（大写开头的驼峰命名）
+  filtered = filtered.replace(/\b[A-Z][a-zA-Z]*(?:[A-Z][a-zA-Z]*)*\b/g, '');
+  
+  // 移除技术术语和格式化标记
+  filtered = filtered.replace(/\*\*([^*]+)\*\*/g, '$1'); // 移除加粗标记，保留内容
+  filtered = filtered.replace(/\*([^*]+)\*/g, '$1'); // 移除斜体标记，保留内容
+  filtered = filtered.replace(/#{1,6}\s+/g, ''); // 移除markdown标题标记
+  filtered = filtered.replace(/^\s*[-*+]\s+/gm, ''); // 移除列表标记
+  filtered = filtered.replace(/^\s*\d+\.\s+/gm, ''); // 移除数字列表标记
+  
+  // 移除常见的技术术语模式
+  filtered = filtered.replace(/\b(?:def|class|import|from|return|if|else|for|while|try|except|function|var|let|const|interface|type)\b/g, '');
+  
+  // 移除特殊符号和格式化字符
+  filtered = filtered.replace(/[{}[\]()=;:,.<>]/g, ' ');
+  
+  // 清理多余的空白和换行
+  filtered = filtered.replace(/\n{3,}/g, '\n\n'); // 最多保留两个连续换行
+  filtered = filtered.replace(/[ \t]{2,}/g, ' '); // 多个空格替换为单个空格
+  filtered = filtered.replace(/^\s+|\s+$/gm, ''); // 移除行首行尾空白
+  filtered = filtered.trim();
+  
+  return filtered;
+}
+
 // 显示优化后的需求
 function showRefinedRequirement(refineResult) {
+  // 过滤掉代码部分，只保留纯文字需求描述
+  const filteredRequirement = filterCodeFromRequirement(refineResult.refined_requirement);
+  
   // 在需求输入框上方添加一个展示优化需求的区域
   const requirementContainer = document.getElementById('requirement').parentElement;
   
@@ -1543,14 +1582,14 @@ function showRefinedRequirement(refineResult) {
       </div>
     </div>
     
-    <!-- 显示模式 -->
-    <div id="refinedDisplay" class="bg-white p-3 rounded border">
-      <pre class="text-sm text-gray-800 whitespace-pre-wrap font-mono">${refineResult.refined_requirement}</pre>
-    </div>
-    
-    <!-- 编辑模式 -->
-    <div id="refinedEditor" class="bg-white p-3 rounded border" style="display: none;">
-      <textarea id="refinedTextarea" class="w-full h-64 p-3 border border-gray-300 rounded text-sm resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="编辑您的需求...">${refineResult.refined_requirement}</textarea>
+     <!-- 显示模式 -->
+     <div id="refinedDisplay" class="bg-white p-3 rounded border">
+       <div class="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">${filteredRequirement}</div>
+     </div>
+     
+     <!-- 编辑模式 -->
+     <div id="refinedEditor" class="bg-white p-3 rounded border" style="display: none;">
+       <textarea id="refinedTextarea" class="w-full h-64 p-3 border border-gray-300 rounded text-sm resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="编辑您的需求...">${filteredRequirement}</textarea>
       <div class="flex items-center gap-2 mt-3">
         <button onclick="saveRefinedRequirement()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm flex items-center gap-2">
           <i class="fas fa-check"></i>
@@ -1582,8 +1621,11 @@ function showRefinedRequirement(refineResult) {
     refinedDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 100);
   
-  // 存储优化后的需求以供后续使用
-  window.refinedRequirementData = refineResult;
+  // 存储优化后的需求以供后续使用（使用过滤后的文本）
+  window.refinedRequirementData = {
+    ...refineResult,
+    refined_requirement: filteredRequirement
+  };
 }
 
 // 复制优化后的需求
