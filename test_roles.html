@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>角色功能测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .role-card { border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 5px; }
+        .role-name { font-weight: bold; color: #333; }
+        .role-desc { color: #666; margin: 5px 0; }
+        .role-prompt { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; font-size: 0.9em; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #status { margin: 20px 0; padding: 10px; border-radius: 3px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🎭 角色功能测试</h1>
+    
+    <div id="status">正在加载角色数据...</div>
+    
+    <button onclick="loadRoles()">重新加载角色</button>
+    <button onclick="testDefaultRole()">测试设置默认角色</button>
+    
+    <div id="roles-container">
+        <!-- 角色列表将在这里显示 -->
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8000";
+        let availableRoles = {};
+        let currentRole = 'developer';
+
+        async function loadRoles() {
+            const statusDiv = document.getElementById('status');
+            const container = document.getElementById('roles-container');
+            
+            try {
+                statusDiv.textContent = '正在加载角色数据...';
+                statusDiv.className = '';
+                
+                const response = await fetch(`${API_BASE}/api/v1/settings/roles`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                availableRoles = data.roles;
+                currentRole = data.default_role;
+                
+                statusDiv.textContent = `✅ 成功加载 ${Object.keys(availableRoles).length} 个角色，默认角色：${data.default_role}`;
+                statusDiv.className = 'success';
+                
+                // 显示角色列表
+                container.innerHTML = '';
+                Object.entries(availableRoles).forEach(([roleId, role]) => {
+                    const roleCard = document.createElement('div');
+                    roleCard.className = 'role-card';
+                    roleCard.innerHTML = `
+                        <div class="role-name">🎭 ${role.name} (${roleId})</div>
+                        <div class="role-desc">${role.description}</div>
+                        <div class="role-prompt"><strong>提示词模板：</strong><br>${role.prompt_template}</div>
+                        <button onclick="setAsDefault('${roleId}')">设为默认角色</button>
+                    `;
+                    container.appendChild(roleCard);
+                });
+                
+            } catch (error) {
+                statusDiv.textContent = `❌ 加载失败: ${error.message}`;
+                statusDiv.className = 'error';
+                console.error('加载角色失败:', error);
+            }
+        }
+
+        async function setAsDefault(roleId) {
+            const statusDiv = document.getElementById('status');
+            
+            try {
+                statusDiv.textContent = `正在设置 ${roleId} 为默认角色...`;
+                statusDiv.className = '';
+                
+                const response = await fetch(`${API_BASE}/api/v1/settings/default-role`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ role_id: roleId })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                currentRole = roleId;
+                
+                statusDiv.textContent = `✅ ${result.message}`;
+                statusDiv.className = 'success';
+                
+            } catch (error) {
+                statusDiv.textContent = `❌ 设置失败: ${error.message}`;
+                statusDiv.className = 'error';
+                console.error('设置默认角色失败:', error);
+            }
+        }
+
+        async function testDefaultRole() {
+            await setAsDefault('software_engineer');
+            setTimeout(() => loadRoles(), 1000);
+        }
+
+        // 页面加载时自动加载角色
+        window.addEventListener('load', loadRoles);
+    </script>
+</body>
+</html>

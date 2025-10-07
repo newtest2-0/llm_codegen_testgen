@@ -132,8 +132,15 @@ async def generate_code(request: GenerateRequest, req: Request):
         provider = provider_manager.get_provider(provider_name)
         try:
             logger.info(f"使用 {provider_name} 生成代码...")
+            
+            # 构建包含角色提示词的完整需求
+            enhanced_requirement = request.requirement
+            if request.role_prompt:
+                enhanced_requirement = f"{request.role_prompt}\n\n需求描述：\n{request.requirement}"
+                logger.info(f"使用角色 '{request.role}' 的提示词增强需求")
+            
             code = await provider.generate_code(
-                requirement=request.requirement,
+                requirement=enhanced_requirement,
                 language=request.language,
                 extra_directives=request.extra_directives
             )
@@ -175,7 +182,9 @@ async def generate_code(request: GenerateRequest, req: Request):
             tests_code = await test_generator.generate_tests_for_code(
                 code=best_code,
                 requirement=request.requirement,
-                provider_name=test_provider_name
+                provider_name=test_provider_name,
+                role=request.role,
+                role_prompt=request.role_prompt
             )
             
             logger.info("✅ 智能测试用例生成完成")

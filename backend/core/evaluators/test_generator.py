@@ -152,7 +152,9 @@ class IntelligentTestGenerator:
         self.analyzer = CodeAnalyzer()
     
     async def generate_tests_for_code(self, code: str, requirement: str, 
-                                    provider_name: Optional[str] = None) -> str:
+                                    provider_name: Optional[str] = None,
+                                    role: str = "developer",
+                                    role_prompt: Optional[str] = None) -> str:
         """
         根据具体代码生成测试用例
         
@@ -160,6 +162,8 @@ class IntelligentTestGenerator:
             code: 生成的代码
             requirement: 原始需求
             provider_name: 指定的AI提供者
+            role: 开发角色
+            role_prompt: 角色提示词
             
         Returns:
             生成的测试代码
@@ -171,8 +175,8 @@ class IntelligentTestGenerator:
             # 如果代码有语法错误，生成基础测试
             return self._generate_basic_test(requirement)
         
-        # 构建智能测试提示
-        test_prompt = self._build_test_prompt(code, analysis, requirement)
+        # 构建智能测试提示（基于角色）
+        test_prompt = self._build_role_based_test_prompt(code, analysis, requirement, role, role_prompt)
         
         # 选择提供者
         if not provider_name:
@@ -200,6 +204,126 @@ class IntelligentTestGenerator:
         except Exception as e:
             logger.error(f"❌ 智能测试生成失败: {e}")
             return self._generate_basic_test(requirement)
+    
+    def _build_role_based_test_prompt(self, code: str, analysis: Dict[str, Any], 
+                                     requirement: str, role: str, role_prompt: Optional[str] = None) -> str:
+        """构建基于角色的测试生成提示"""
+        # 获取角色特定的测试策略
+        role_strategy = self._get_role_testing_strategy(role)
+        
+        # 基础提示
+        base_prompt = self._build_test_prompt(code, analysis, requirement)
+        
+        # 添加角色特定的测试要求
+        role_specific_prompt = f"""
+        
+**角色测试策略 - {role_strategy['name']}：**
+{role_strategy['description']}
+
+**角色特定测试要求：**
+{role_strategy['test_requirements']}
+
+**测试重点：**
+{role_strategy['focus_areas']}
+"""
+        
+        if role_prompt:
+            role_specific_prompt += f"""
+            
+**角色指导原则：**
+{role_prompt}
+"""
+        
+        return base_prompt + role_specific_prompt
+    
+    def _get_role_testing_strategy(self, role: str) -> Dict[str, str]:
+        """获取角色特定的测试策略"""
+        strategies = {
+            "developer": {
+                "name": "开发人员测试策略",
+                "description": "注重功能完整性和代码质量验证",
+                "test_requirements": """
+- 全面的功能测试覆盖
+- 详细的边界条件测试
+- 基本的异常处理测试
+- 代码路径覆盖测试""",
+                "focus_areas": """
+- 确保所有功能按预期工作
+- 验证输入输出的正确性
+- 测试常见的使用场景
+- 基础性能验证"""
+            },
+            "software_engineer": {
+                "name": "软件工程师测试策略", 
+                "description": "强调系统架构和工程质量的测试",
+                "test_requirements": """
+- 模块化测试设计
+- 集成测试用例
+- 接口契约测试
+- 系统边界测试
+- 依赖关系测试""",
+                "focus_areas": """
+- 模块间的交互测试
+- 系统架构的健壮性
+- 可扩展性验证
+- 错误传播和处理
+- 资源管理测试"""
+            },
+            "system_analyst": {
+                "name": "系统分析师测试策略",
+                "description": "深度业务逻辑和需求符合性测试",
+                "test_requirements": """
+- 业务需求验证测试
+- 用户场景测试
+- 数据流测试
+- 业务规则验证
+- 需求追溯测试""",
+                "focus_areas": """
+- 业务逻辑的正确性
+- 需求的完整实现
+- 用户体验验证
+- 数据处理准确性
+- 业务流程完整性"""
+            },
+            "senior_evaluator": {
+                "name": "高级评测专家测试策略",
+                "description": "全面的质量评估和性能测试",
+                "test_requirements": """
+- 全面的质量指标测试
+- 性能基准测试
+- 安全性测试
+- 可靠性测试
+- 压力测试和负载测试
+- 代码质量度量测试""",
+                "focus_areas": """
+- 性能瓶颈识别
+- 安全漏洞检测
+- 内存和资源使用优化
+- 并发和多线程安全
+- 代码复杂度分析
+- 可维护性评估"""
+            },
+            "software_analyst": {
+                "name": "软件分析人员测试策略",
+                "description": "深入的代码分析和质量保证测试",
+                "test_requirements": """
+- 静态代码分析测试
+- 代码覆盖率测试
+- 复杂度分析测试
+- 潜在缺陷检测测试
+- 代码规范符合性测试
+- 技术债务评估测试""",
+                "focus_areas": """
+- 代码质量度量
+- 潜在问题识别
+- 代码可读性验证
+- 最佳实践符合性
+- 重构建议验证
+- 代码异味检测"""
+            }
+        }
+        
+        return strategies.get(role, strategies["developer"])
     
     def _build_test_prompt(self, code: str, analysis: Dict[str, Any], requirement: str) -> str:
         """构建测试生成提示"""

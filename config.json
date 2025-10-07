@@ -71,5 +71,45 @@
       "security": 0.15,
       "maintainability": 0.1
     }
+  },
+  "roles": {
+    "default": "developer",
+    "available_roles": {
+      "developer": {
+        "name": "开发人员",
+        "description": "专注于功能实现和代码质量",
+        "icon": "fas fa-code",
+        "color": "blue",
+        "prompt_template": "作为一名经验丰富的开发人员，请根据需求编写高质量、可维护的代码。注重代码的可读性、性能和最佳实践。"
+      },
+      "software_engineer": {
+        "name": "软件工程师",
+        "description": "注重系统架构和工程实践",
+        "icon": "fas fa-cogs",
+        "color": "green",
+        "prompt_template": "作为一名软件工程师，请设计并实现符合软件工程原则的解决方案。考虑系统架构、模块化设计、错误处理和扩展性。"
+      },
+      "system_analyst": {
+        "name": "系统分析师",
+        "description": "深入分析需求和系统设计",
+        "icon": "fas fa-chart-line",
+        "color": "purple",
+        "prompt_template": "作为一名系统分析师，请深入分析需求，设计合理的系统架构和数据流。重点关注需求分析、系统设计和业务逻辑的准确性。"
+      },
+      "senior_evaluator": {
+        "name": "高级评测专家",
+        "description": "专业的代码质量评估和优化",
+        "icon": "fas fa-star",
+        "color": "yellow",
+        "prompt_template": "作为一名高级评测专家，请编写高质量的代码并进行全面的质量评估。注重代码的性能优化、安全性、可测试性和行业标准合规性。"
+      },
+      "software_analyst": {
+        "name": "软件分析人员",
+        "description": "专注于代码分析和质量保证",
+        "icon": "fas fa-search",
+        "color": "red",
+        "prompt_template": "作为一名软件分析人员，请进行详细的代码分析和质量保证。重点关注代码的静态分析、潜在问题识别、性能瓶颈分析和改进建议。"
+      }
+    }
   }
 }

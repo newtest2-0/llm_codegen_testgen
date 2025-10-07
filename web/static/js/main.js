@@ -1,9 +1,15 @@
 const API_BASE = "http://localhost:8000";
 
+// 全局变量存储角色信息
+let availableRoles = {};
+let currentRole = 'developer';
+
 // 测试JavaScript是否正常加载
 console.log('🚀 main.js 开始加载...');
 window.addEventListener('load', function() {
   console.log('📱 页面完全加载完成');
+  // 页面加载完成后初始化角色
+  initializeRoles();
 });
 
 async function getHealth(){
@@ -1106,13 +1112,26 @@ const SettingsManager = {
   },
 
   // 保存设置
-  save: function() {
+  save: async function() {
     const settings = Storage.getSettings();
     
     // 保存系统偏好
     settings.defaultLanguage = document.getElementById('defaultLanguage').value;
     settings.autoSaveHistory = document.getElementById('autoSaveHistory').checked;
     settings.showNotifications = document.getElementById('showNotifications').checked;
+    
+    // 保存角色设置到后端
+    const defaultRoleSelect = document.getElementById('defaultRoleTab');
+    if (defaultRoleSelect && defaultRoleSelect.value !== currentRole) {
+      try {
+        await setDefaultRole(defaultRoleSelect.value);
+        currentRole = defaultRoleSelect.value;
+      } catch (error) {
+        console.error('保存默认角色失败:', error);
+        this.showNotification('保存默认角色失败');
+        return;
+      }
+    }
     
     Storage.saveSettings(settings);
     this.hide();
@@ -1193,12 +1212,17 @@ async function generateCode() {
     return;
   }
   
+  // 获取当前选择的角色提示词
+  const rolePrompt = getCurrentRolePrompt();
+  
   // 构建请求体
   const genBody = {
     requirement: requirement,
     language: language,
     extra_directives: extra,
-    providers: selectedProviders
+    providers: selectedProviders,
+    role: currentRole,
+    role_prompt: rolePrompt
   };
   
   console.log('准备发送生成请求:', genBody);
@@ -2905,3 +2929,248 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('language').value = settings.defaultLanguage;
   }
 });
+
+// 角色管理相关函数
+async function initializeRoles() {
+  console.log('🎭 初始化角色系统...');
+  try {
+    await loadRoles();
+    setupRoleEventListeners();
+  } catch (error) {
+    console.error('❌ 角色系统初始化失败:', error);
+  }
+}
+
+async function loadRoles() {
+  try {
+    const response = await fetch(`${API_BASE}/api/v1/settings/roles`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    const data = await response.json();
+    availableRoles = data.roles;
+    currentRole = data.default_role;
+    
+    console.log('✅ 角色数据加载成功:', data);
+    
+    // 更新角色选择器
+    updateRoleSelectors();
+    
+    // 更新角色提示词预览
+    updateRolePromptPreview(currentRole);
+    
+  } catch (error) {
+    console.error('❌ 加载角色失败:', error);
+    // 使用默认角色配置
+    availableRoles = {
+      developer: {
+        id: 'developer',
+        name: '开发人员',
+        description: '专注于功能实现和代码质量',
+        icon: 'fas fa-code',
+        color: 'blue',
+        prompt_template: '作为一名经验丰富的开发人员，请根据需求编写高质量、可维护的代码。'
+      }
+    };
+    currentRole = 'developer';
+    updateRoleSelectors();
+  }
+}
+
+function updateRoleSelectors() {
+  const roleSelect = document.getElementById('roleSelect');
+  const defaultRoleTab = document.getElementById('defaultRoleTab');
+  
+  if (roleSelect) {
+    roleSelect.innerHTML = '';
+    Object.entries(availableRoles).forEach(([roleId, role]) => {
+      const option = document.createElement('option');
+      option.value = roleId;
+      option.textContent = role.name;
+      option.selected = roleId === currentRole;
+      roleSelect.appendChild(option);
+    });
+  }
+  
+  if (defaultRoleTab) {
+    defaultRoleTab.innerHTML = '';
+    Object.entries(availableRoles).forEach(([roleId, role]) => {
+      const option = document.createElement('option');
+      option.value = roleId;
+      option.textContent = role.name;
+      option.selected = roleId === currentRole;
+      defaultRoleTab.appendChild(option);
+    });
+  }
+}
+
+function setupRoleEventListeners() {
+  const roleSelect = document.getElementById('roleSelect');
+  const defaultRoleTab = document.getElementById('defaultRoleTab');
+  
+  if (roleSelect) {
+    roleSelect.addEventListener('change', function() {
+      const selectedRole = this.value;
+      currentRole = selectedRole;
+      updateRoleDescription(selectedRole);
+      updateRolePromptPreview(selectedRole);
+    });
+  }
+  
+  if (defaultRoleTab) {
+    defaultRoleTab.addEventListener('change', function() {
+      const selectedRole = this.value;
+      updateRolePreview(selectedRole);
+    });
+    
+    // 初始化时显示当前角色预览
+    updateRolePreview(currentRole);
+  }
+}
+
+function updateRoleDescription(roleId) {
+  const roleDescElement = document.getElementById('roleDescription');
+  if (roleDescElement && availableRoles[roleId]) {
+    const role = availableRoles[roleId];
+    roleDescElement.innerHTML = `
+      <div class="flex items-center gap-2">
+        <i class="${role.icon} text-${role.color}-600"></i>
+        <span>${role.description}</span>
+      </div>
+    `;
+  }
+}
+
+function updateRolePromptPreview(roleId) {
+  const previewElement = document.getElementById('rolePromptPreview');
+  if (previewElement && availableRoles[roleId]) {
+    const role = availableRoles[roleId];
+    
+    // 获取角色的测试策略信息
+    const testingStrategy = getRoleTestingStrategy(roleId);
+    
+    previewElement.innerHTML = `
+      <div class="space-y-2">
+        <div class="font-medium text-gray-800">${testingStrategy.name}</div>
+        <div class="text-gray-600">${testingStrategy.description}</div>
+        <div class="text-xs">
+          <strong>测试重点：</strong>
+          <div class="mt-1 pl-2 border-l-2 border-blue-200">
+            ${testingStrategy.focus_areas.split('\n').filter(line => line.trim()).map(line => 
+              `<div>• ${line.trim().replace(/^- /, '')}</div>`
+            ).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function getRoleTestingStrategy(roleId) {
+  const strategies = {
+    "developer": {
+      "name": "开发人员测试策略",
+      "description": "注重功能完整性和代码质量验证",
+      "focus_areas": `- 确保所有功能按预期工作
+- 验证输入输出的正确性
+- 测试常见的使用场景
+- 基础性能验证`
+    },
+    "software_engineer": {
+      "name": "软件工程师测试策略", 
+      "description": "强调系统架构和工程质量的测试",
+      "focus_areas": `- 模块间的交互测试
+- 系统架构的健壮性
+- 可扩展性验证
+- 错误传播和处理
+- 资源管理测试`
+    },
+    "system_analyst": {
+      "name": "系统分析师测试策略",
+      "description": "深度业务逻辑和需求符合性测试",
+      "focus_areas": `- 业务逻辑的正确性
+- 需求的完整实现
+- 用户体验验证
+- 数据处理准确性
+- 业务流程完整性`
+    },
+    "senior_evaluator": {
+      "name": "高级评测专家测试策略",
+      "description": "全面的质量评估和性能测试",
+      "focus_areas": `- 性能瓶颈识别
+- 安全漏洞检测
+- 内存和资源使用优化
+- 并发和多线程安全
+- 代码复杂度分析
+- 可维护性评估`
+    },
+    "software_analyst": {
+      "name": "软件分析人员测试策略",
+      "description": "深入的代码分析和质量保证测试",
+      "focus_areas": `- 代码质量度量
+- 潜在问题识别
+- 代码可读性验证
+- 最佳实践符合性
+- 重构建议验证
+- 代码异味检测`
+    }
+  };
+  
+  return strategies[roleId] || strategies["developer"];
+}
+
+function updateRolePreview(roleId) {
+  const previewContent = document.getElementById('rolePreviewContent');
+  if (previewContent && availableRoles[roleId]) {
+    const role = availableRoles[roleId];
+    previewContent.innerHTML = `
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <i class="${role.icon} text-${role.color}-600"></i>
+          <span class="font-medium">${role.name}</span>
+        </div>
+        <div class="text-gray-600">${role.description}</div>
+        <div class="bg-white rounded p-2 text-xs">
+          <strong>提示词模板:</strong><br>
+          ${role.prompt_template}
+        </div>
+      </div>
+    `;
+  }
+}
+
+async function setDefaultRole(roleId) {
+  try {
+    const response = await fetch(`${API_BASE}/api/v1/settings/default-role`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ role_id: roleId })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log('✅ 默认角色设置成功:', result);
+    
+    // 显示成功消息
+    showNotification(result.message, 'success');
+    
+    return result;
+  } catch (error) {
+    console.error('❌ 设置默认角色失败:', error);
+    showNotification('设置默认角色失败', 'error');
+    throw error;
+  }
+}
+
+function getCurrentRolePrompt() {
+  if (availableRoles[currentRole]) {
+    return availableRoles[currentRole].prompt_template;
+  }
+  return '请根据需求编写高质量的代码。';
+}

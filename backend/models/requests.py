@@ -11,6 +11,8 @@ class GenerateRequest(BaseModel):
     language: str = Field("python", description="编程语言")
     test_generator_provider: Optional[str] = Field(None, description="测试生成器提供者")
     extra_directives: Optional[str] = Field(None, description="额外指令")
+    role: Optional[str] = Field("developer", description="开发角色")
+    role_prompt: Optional[str] = Field(None, description="角色提示词模板")
 
 class EvaluateRequest(BaseModel):
     """代码评估请求模型"""
