@@ -47,17 +47,27 @@ async function getHealth(){
 
 function escapeHtml(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m])); }
 
-function displayTests(testsCode) {
-  console.log('显示测试用例:', testsCode);
+function displayTests(testsCode, testProvider) {
+  console.log('🧪 displayTests 被调用，代码长度:', testsCode?.length, '提供者:', testProvider);
   
-  const testsSection = document.getElementById("testsSection");
+  const testsSection = document.getElementById("tests-section");
   const testsCodeElement = document.getElementById("testsCode");
   const testInfo = document.getElementById("testInfo");
   const testStatus = document.getElementById("testStatus");
   
   if (!testsSection || !testsCodeElement) {
-    console.error('找不到测试展示元素');
+    console.error('❌ 找不到测试展示元素:', {
+      testsSection: !!testsSection,
+      testsCodeElement: !!testsCodeElement,
+      testInfo: !!testInfo,
+      testStatus: !!testStatus
+    });
     return;
+  }
+  
+  if (!testsCode || testsCode.trim().length === 0) {
+    console.warn('⚠️ 测试代码为空');
+    testsCodeElement.textContent = '# 测试代码为空\n# 请手动添加测试用例';
   }
   
   // 显示测试代码
@@ -68,42 +78,69 @@ function displayTests(testsCode) {
   const testFunctions = testLines.filter(line => line.trim().startsWith('def test_')).length;
   const hasEdgeCases = testsCode.includes('edge') || testsCode.includes('boundary') || testsCode.includes('边界');
   const hasExceptions = testsCode.includes('pytest.raises') || testsCode.includes('Exception') || testsCode.includes('异常');
+  const hasAsserts = testsCode.includes('assert ') || testsCode.includes('assertEqual');
+  const hasSetup = testsCode.includes('setUp') || testsCode.includes('fixture') || testsCode.includes('@');
+  
+  // 分析测试覆盖类型
+  const testTypes = [];
+  if (testsCode.includes('正常') || testsCode.includes('normal') || testsCode.includes('valid')) testTypes.push('正常用例');
+  if (hasEdgeCases) testTypes.push('边界用例');
+  if (hasExceptions) testTypes.push('异常用例');
+  if (testsCode.includes('性能') || testsCode.includes('performance')) testTypes.push('性能测试');
   
   // 更新测试信息
+  const providerDisplayName = testProvider ? testProvider.toUpperCase() : '未知';
+  const providerColor = testProvider ? 'text-blue-600' : 'text-gray-500';
+  
   testInfo.innerHTML = `
     <div class="flex justify-between">
-      <span>生成方式:</span>
+      <span class="text-gray-600">生成方式:</span>
       <span class="font-medium text-blue-600">智能分析代码结构</span>
     </div>
     <div class="flex justify-between">
-      <span>测试框架:</span>
+      <span class="text-gray-600">AI提供者:</span>
+      <span class="font-medium ${providerColor}">${providerDisplayName}</span>
+    </div>
+    <div class="flex justify-between">
+      <span class="text-gray-600">测试框架:</span>
       <span class="font-medium">pytest</span>
     </div>
     <div class="flex justify-between">
-      <span>测试函数:</span>
+      <span class="text-gray-600">测试函数:</span>
       <span class="font-medium text-green-600">${testFunctions} 个</span>
     </div>
     <div class="flex justify-between">
-      <span>边界测试:</span>
-      <span class="font-medium ${hasEdgeCases ? 'text-green-600' : 'text-gray-400'}">${hasEdgeCases ? '✓ 包含' : '✗ 无'}</span>
+      <span class="text-gray-600">断言检查:</span>
+      <span class="font-medium ${hasAsserts ? 'text-green-600' : 'text-gray-400'}">${hasAsserts ? '✓ 包含' : '✗ 无'}</span>
     </div>
     <div class="flex justify-between">
-      <span>异常测试:</span>
-      <span class="font-medium ${hasExceptions ? 'text-green-600' : 'text-gray-400'}">${hasExceptions ? '✓ 包含' : '✗ 无'}</span>
+      <span class="text-gray-600">测试类型:</span>
+      <span class="font-medium text-blue-600">${testTypes.length > 0 ? testTypes.join(', ') : '基础测试'}</span>
+    </div>
+    <div class="flex justify-between">
+      <span class="text-gray-600">测试覆盖:</span>
+      <span class="font-medium ${testTypes.length >= 3 ? 'text-green-600' : testTypes.length >= 2 ? 'text-yellow-600' : 'text-gray-600'}">${testTypes.length >= 3 ? '全面' : testTypes.length >= 2 ? '良好' : '基础'}</span>
     </div>
   `;
   
   // 更新测试状态
+  const qualityScore = testTypes.length >= 3 ? '优秀' : testTypes.length >= 2 ? '良好' : '基础';
+  const qualityColor = testTypes.length >= 3 ? 'text-green-600' : testTypes.length >= 2 ? 'text-yellow-600' : 'text-blue-600';
+  
   testStatus.innerHTML = `
-    <div class="text-green-600">
+    <div class="${qualityColor}">
       <i class="fas fa-check-circle text-2xl mb-2"></i>
       <p class="font-medium">测试用例生成完成</p>
-      <p class="text-sm text-gray-500 mt-1">包含 ${testFunctions} 个测试函数</p>
+      <p class="text-sm text-gray-500 mt-1">${testFunctions} 个测试函数</p>
+      <div class="mt-2 text-xs">
+        <span class="inline-block px-2 py-1 bg-gray-100 rounded text-gray-700">质量评级: ${qualityScore}</span>
+      </div>
     </div>
   `;
   
   // 显示测试区域
   testsSection.classList.remove('hidden');
+  console.log('✅ 测试区域已显示');
   
   // 更新右侧导航
   if (typeof RightNavigation !== 'undefined') {
@@ -113,7 +150,10 @@ function displayTests(testsCode) {
   // 滚动到测试区域
   setTimeout(() => {
     testsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    console.log('📍 已滚动到测试区域');
   }, 500);
+  
+  console.log('✅ displayTests 完成');
 }
 
 // 复制测试代码功能
@@ -260,13 +300,13 @@ document.getElementById("runBtn").addEventListener("click", async () => {
   console.log('点击了生成按钮');
   
   // 清空之前的结果
-  const resultsDiv = document.getElementById("results");
-  const winnerDiv = document.getElementById("winner");
-  const testsDiv = document.getElementById("testsSection");
+  const resultsDiv = document.getElementById("results-section");
+  const winnerDiv = document.getElementById("winner-section");
+  const testsDiv = document.getElementById("tests-section");
   
-  resultsDiv.innerHTML = '';
-  winnerDiv.classList.add('hidden');
-  testsDiv.classList.add('hidden');
+  if (resultsDiv) resultsDiv.innerHTML = '';
+  if (winnerDiv) winnerDiv.classList.add('hidden');
+  if (testsDiv) testsDiv.classList.add('hidden');
   
   const requirement = document.getElementById("requirement").value.trim();
   const language = document.getElementById("language").value;
@@ -312,7 +352,7 @@ document.getElementById("runBtn").addEventListener("click", async () => {
 
     // 显示测试用例
     if (gen.tests_code) {
-      displayTests(gen.tests_code);
+      displayTests(gen.tests_code, gen.test_provider);
     }
 
     const artifacts = gen.artifacts.map(a => ({...a, _code: a.code}));
@@ -679,7 +719,7 @@ const ExportManager = {
   // 显示导出模态框
   show: function() {
     // 检查是否有可导出的数据
-    const results = document.getElementById('results');
+    const results = document.getElementById('results-section');
     if (!results || results.children.length === 0) {
       alert('暂无可导出的代码，请先生成代码。');
       return;
@@ -1181,7 +1221,7 @@ async function generateCode() {
     
     // 显示测试代码
     if (gen.tests_code) {
-      displayTests(gen.tests_code);
+      displayTests(gen.tests_code, gen.test_provider);
     }
     
     // 处理生成的代码
@@ -1238,24 +1278,44 @@ async function generateCode() {
 
 // 显示结果的函数
 function displayResults(results, winner) {
-  console.log('显示结果:', results, winner);
+  console.log('🎯 displayResults 被调用:', { results: results?.length, winner: winner?.provider });
   
-  const resultsContainer = document.getElementById('results');
-  if (!resultsContainer) return;
+  const resultsContainer = document.getElementById('results-section');
+  if (!resultsContainer) {
+    console.error('❌ 找不到 results-section 容器');
+    return;
+  }
   
   // 清空之前的结果
   resultsContainer.innerHTML = '';
   
+  if (!results || results.length === 0) {
+    console.warn('⚠️ 没有结果数据可显示');
+    resultsContainer.innerHTML = '<div class="text-center py-8 text-gray-500">暂无结果数据</div>';
+    return;
+  }
+  
   // 显示每个结果
+  console.log('📊 开始渲染', results.length, '个结果卡片');
   results.forEach((result, index) => {
-    const resultCard = createResultCard(result, index);
-    resultsContainer.appendChild(resultCard);
+    try {
+      const resultCard = createResultCard(result, index);
+      resultsContainer.appendChild(resultCard);
+      console.log('✅ 结果卡片', index + 1, '渲染完成:', result.provider);
+    } catch (error) {
+      console.error('❌ 渲染结果卡片失败:', error, result);
+    }
   });
   
   // 显示最优方案
   if (winner) {
+    console.log('🏆 显示最优方案:', winner.provider);
     displayWinner(winner);
+  } else {
+    console.warn('⚠️ 没有最优方案数据');
   }
+  
+  console.log('✅ displayResults 完成');
 }
 
 // 创建结果卡片
@@ -1414,13 +1474,13 @@ async function professionalGenerate() {
     };
     
     // 清空之前的结果
-    const resultsDiv = document.getElementById("results");
-    const winnerDiv = document.getElementById("winner");
-    const testsDiv = document.getElementById("testsSection");
+    const resultsDiv = document.getElementById("results-section");
+    const winnerDiv = document.getElementById("winner-section");
+    const testsDiv = document.getElementById("tests-section");
     
-    resultsDiv.innerHTML = '';
-    winnerDiv.classList.add('hidden');
-    testsDiv.classList.add('hidden');
+    if (resultsDiv) resultsDiv.innerHTML = '';
+    if (winnerDiv) winnerDiv.classList.add('hidden');
+    if (testsDiv) testsDiv.classList.add('hidden');
     
     // 调用现有的代码生成流程
     const genResponse = await fetch(API_BASE + "/api/v1/generation/generate", {
@@ -1438,7 +1498,7 @@ async function professionalGenerate() {
 
     // 显示测试用例
     if (gen.tests_code) {
-      displayTests(gen.tests_code);
+      displayTests(gen.tests_code, gen.test_provider);
     }
 
     const artifacts = gen.artifacts.map(a => ({...a, _code: a.code}));
@@ -1487,8 +1547,47 @@ async function professionalGenerate() {
   }
 }
 
+// 过滤需求描述中的代码部分
+function filterCodeFromRequirement(text) {
+  // 移除代码块（```包围的内容）
+  let filtered = text.replace(/```[\s\S]*?```/g, '');
+  
+  // 移除行内代码（`包围的内容）
+  filtered = filtered.replace(/`[^`\n]+`/g, '');
+  
+  // 移除可能的函数调用格式
+  filtered = filtered.replace(/\w+\([^)]*\)/g, '');
+  
+  // 移除类名格式（大写开头的驼峰命名）
+  filtered = filtered.replace(/\b[A-Z][a-zA-Z]*(?:[A-Z][a-zA-Z]*)*\b/g, '');
+  
+  // 移除技术术语和格式化标记
+  filtered = filtered.replace(/\*\*([^*]+)\*\*/g, '$1'); // 移除加粗标记，保留内容
+  filtered = filtered.replace(/\*([^*]+)\*/g, '$1'); // 移除斜体标记，保留内容
+  filtered = filtered.replace(/#{1,6}\s+/g, ''); // 移除markdown标题标记
+  filtered = filtered.replace(/^\s*[-*+]\s+/gm, ''); // 移除列表标记
+  filtered = filtered.replace(/^\s*\d+\.\s+/gm, ''); // 移除数字列表标记
+  
+  // 移除常见的技术术语模式
+  filtered = filtered.replace(/\b(?:def|class|import|from|return|if|else|for|while|try|except|function|var|let|const|interface|type)\b/g, '');
+  
+  // 移除特殊符号和格式化字符
+  filtered = filtered.replace(/[{}[\]()=;:,.<>]/g, ' ');
+  
+  // 清理多余的空白和换行
+  filtered = filtered.replace(/\n{3,}/g, '\n\n'); // 最多保留两个连续换行
+  filtered = filtered.replace(/[ \t]{2,}/g, ' '); // 多个空格替换为单个空格
+  filtered = filtered.replace(/^\s+|\s+$/gm, ''); // 移除行首行尾空白
+  filtered = filtered.trim();
+  
+  return filtered;
+}
+
 // 显示优化后的需求
 function showRefinedRequirement(refineResult) {
+  // 过滤掉代码部分，只保留纯文字需求描述
+  const filteredRequirement = filterCodeFromRequirement(refineResult.refined_requirement);
+  
   // 在需求输入框上方添加一个展示优化需求的区域
   const requirementContainer = document.getElementById('requirement').parentElement;
   
@@ -1524,14 +1623,14 @@ function showRefinedRequirement(refineResult) {
       </div>
     </div>
     
-    <!-- 显示模式 -->
-    <div id="refinedDisplay" class="bg-white p-3 rounded border">
-      <pre class="text-sm text-gray-800 whitespace-pre-wrap font-mono">${refineResult.refined_requirement}</pre>
-    </div>
-    
-    <!-- 编辑模式 -->
-    <div id="refinedEditor" class="bg-white p-3 rounded border" style="display: none;">
-      <textarea id="refinedTextarea" class="w-full h-64 p-3 border border-gray-300 rounded text-sm resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="编辑您的需求...">${refineResult.refined_requirement}</textarea>
+     <!-- 显示模式 -->
+     <div id="refinedDisplay" class="bg-white p-3 rounded border">
+       <div class="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">${filteredRequirement}</div>
+     </div>
+     
+     <!-- 编辑模式 -->
+     <div id="refinedEditor" class="bg-white p-3 rounded border" style="display: none;">
+       <textarea id="refinedTextarea" class="w-full h-64 p-3 border border-gray-300 rounded text-sm resize-y focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="编辑您的需求...">${filteredRequirement}</textarea>
       <div class="flex items-center gap-2 mt-3">
         <button onclick="saveRefinedRequirement()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm flex items-center gap-2">
           <i class="fas fa-check"></i>
@@ -1563,8 +1662,11 @@ function showRefinedRequirement(refineResult) {
     refinedDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 100);
   
-  // 存储优化后的需求以供后续使用
-  window.refinedRequirementData = refineResult;
+  // 存储优化后的需求以供后续使用（使用过滤后的文本）
+  window.refinedRequirementData = {
+    ...refineResult,
+    refined_requirement: filteredRequirement
+  };
 }
 
 // 复制优化后的需求
@@ -1737,6 +1839,15 @@ async function continueGenerate() {
   try {
     console.log('🔧 开始基于优化需求生成代码...');
     
+    // 清空之前的结果
+    const resultsDiv = document.getElementById("results-section");
+    const winnerDiv = document.getElementById("winner-section");
+    const testsDiv = document.getElementById("tests-section");
+    
+    if (resultsDiv) resultsDiv.innerHTML = '';
+    if (winnerDiv) winnerDiv.classList.add('hidden');
+    if (testsDiv) testsDiv.classList.add('hidden');
+    
     // 获取选中的模型提供者
     const selectedProviders = Array.from(document.querySelectorAll('.provider-checkbox:checked')).map(cb => cb.value);
     
@@ -1765,15 +1876,32 @@ async function continueGenerate() {
     
     // 显示测试用例
     if (generateResult.tests_code) {
-      displayTests(generateResult.tests_code);
+      console.log('📝 显示测试用例:', generateResult.tests_code.substring(0, 100) + '...');
+      displayTests(generateResult.tests_code, generateResult.test_provider);
+    } else {
+      console.warn('⚠️ 没有测试用例数据');
     }
     
     // 自动评估代码
+    console.log('🔍 开始评估代码...');
     const evalResult = await evaluateResults(generateResult);
+    console.log('📊 评估结果:', evalResult);
     
     // 显示生成结果
     if (evalResult && evalResult.results) {
-      displayResults(evalResult.results, evalResult.best);
+      console.log('🎯 显示生成结果，共', evalResult.results.length, '个方案');
+      displayResults(evalResult.results, evalResult.winner);
+      
+      // 显示最优方案
+      if (evalResult.winner) {
+        const winnerSection = document.getElementById('winner-section');
+        if (winnerSection) {
+          winnerSection.classList.remove('hidden');
+          console.log('🏆 显示最优方案:', evalResult.winner.provider);
+        }
+      }
+    } else {
+      console.error('❌ 评估结果为空或无效');
     }
     
     showNotification('代码生成完成！', 'success');
@@ -2070,7 +2198,7 @@ const TabManager = {
   // 刷新导出内容
   refreshExportContent: function() {
     // 检查是否有可导出的内容
-    const hasResults = document.getElementById('results')?.children.length > 0;
+    const hasResults = document.getElementById('results-section')?.children.length > 0;
     const exportBtn = document.getElementById('exportNowBtn');
     
     if (exportBtn) {

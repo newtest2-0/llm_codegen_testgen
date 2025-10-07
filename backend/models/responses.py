@@ -34,6 +34,7 @@ class GenerateResponse(BaseModel):
     artifacts: List["CodeArtifact"] = Field(..., description="生成的代码制品")
     tests_code: Optional[str] = Field(None, description="生成的测试代码")
     language: str = Field(..., description="编程语言")
+    test_provider: Optional[str] = Field(None, description="用于测试生成的提供者")
     
 # 避免循环导入
 from .artifacts import CodeArtifact
