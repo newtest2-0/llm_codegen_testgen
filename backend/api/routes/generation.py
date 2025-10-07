@@ -12,6 +12,7 @@ from models import GenerateRequest, GenerateResponse, CodeArtifact
 from core.providers import ProviderManager
 from core.evaluators.test_generator import IntelligentTestGenerator
 from core.api_key_storage import api_key_storage
+from .system import metrics
 
 logger = logging.getLogger(__name__)
 class RefineRequirementRequest(BaseModel):
@@ -108,6 +109,8 @@ async def generate_code(request: GenerateRequest, req: Request):
     Returns:
         代码生成响应
     """
+    # 开始请求跟踪
+    start_time = metrics.start_request()
     # 获取提供者管理器
     provider_manager: ProviderManager = req.app.state.provider_manager
     
@@ -132,8 +135,15 @@ async def generate_code(request: GenerateRequest, req: Request):
         provider = provider_manager.get_provider(provider_name)
         try:
             logger.info(f"使用 {provider_name} 生成代码...")
+            
+            # 构建包含角色提示词的完整需求
+            enhanced_requirement = request.requirement
+            if request.role_prompt:
+                enhanced_requirement = f"{request.role_prompt}\n\n需求描述：\n{request.requirement}"
+                logger.info(f"使用角色 '{request.role}' 的提示词增强需求")
+            
             code = await provider.generate_code(
-                requirement=request.requirement,
+                requirement=enhanced_requirement,
                 language=request.language,
                 extra_directives=request.extra_directives
             )
@@ -175,7 +185,9 @@ async def generate_code(request: GenerateRequest, req: Request):
             tests_code = await test_generator.generate_tests_for_code(
                 code=best_code,
                 requirement=request.requirement,
-                provider_name=test_provider_name
+                provider_name=test_provider_name,
+                role=request.role,
+                role_prompt=request.role_prompt
             )
             
             logger.info("✅ 智能测试用例生成完成")
@@ -238,6 +250,10 @@ def test_placeholder():
 """
     
     logger.info(f"会话 {session_id} 代码生成完成，共生成 {len(artifacts)} 个方案")
+    
+    # 结束请求跟踪
+    response_time = metrics.end_request(start_time)
+    logger.info(f"请求处理时间: {response_time:.2f}ms")
     
     return GenerateResponse(
         session_id=session_id,

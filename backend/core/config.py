@@ -144,6 +144,55 @@ class Config:
     def timeouts(self) -> Dict[str, int]:
         """获取超时配置"""
         return self.get("timeouts", {})
+    
+    @property
+    def roles(self) -> Dict[str, Any]:
+        """获取角色配置"""
+        return self.get("roles", {})
+    
+    @property
+    def available_roles(self) -> Dict[str, Any]:
+        """获取可用角色列表"""
+        return self.get("roles.available_roles", {})
+    
+    @property
+    def default_role(self) -> str:
+        """获取默认角色"""
+        return self.get("roles.default", "developer")
+    
+    def get_role_config(self, role_id: str) -> Optional[Dict[str, Any]]:
+        """
+        获取指定角色的配置
+        
+        Args:
+            role_id: 角色ID
+            
+        Returns:
+            角色配置，如果不存在返回None
+        """
+        roles = self.available_roles
+        return roles.get(role_id)
+    
+    def get_role_prompt_template(self, role_id: str) -> str:
+        """
+        获取指定角色的提示词模板
+        
+        Args:
+            role_id: 角色ID
+            
+        Returns:
+            提示词模板，如果角色不存在返回默认模板
+        """
+        role_config = self.get_role_config(role_id)
+        if role_config:
+            return role_config.get("prompt_template", "")
+        
+        # 如果角色不存在，返回默认开发人员角色的模板
+        default_role_config = self.get_role_config(self.default_role)
+        if default_role_config:
+            return default_role_config.get("prompt_template", "")
+        
+        return "请根据需求编写高质量的代码。"
 
 # 全局配置实例
 config = Config()
