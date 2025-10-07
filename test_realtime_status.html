@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实时状态监控测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .status-card { background: white; border-radius: 8px; padding: 20px; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+        .metric-item { background: #f8f9fa; padding: 15px; border-radius: 6px; text-align: center; }
+        .metric-label { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .metric-value { font-size: 18px; font-weight: bold; }
+        .status-online { color: #28a745; }
+        .status-offline { color: #dc3545; }
+        .latency-good { color: #28a745; }
+        .latency-medium { color: #ffc107; }
+        .latency-bad { color: #dc3545; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        .log { background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 实时状态监控测试</h1>
+        
+        <div class="status-card">
+            <h3>系统状态</h3>
+            <div id="systemStatus" class="status-offline">检查中...</div>
+        </div>
+        
+        <div class="status-card">
+            <h3>实时指标</h3>
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <div class="metric-label">API延迟</div>
+                    <div id="apiLatency" class="metric-value">-- ms</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">队列大小</div>
+                    <div id="queueSize" class="metric-value">0</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">可用提供者</div>
+                    <div id="availableProviders" class="metric-value">0</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">更新时间</div>
+                    <div id="lastUpdate" class="metric-value">--</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h3>控制面板</h3>
+            <button id="startBtn" onclick="startMonitoring()">开始监控</button>
+            <button id="stopBtn" onclick="stopMonitoring()">停止监控</button>
+            <button onclick="testApiCall()">测试API调用</button>
+            <button onclick="clearLog()">清空日志</button>
+        </div>
+        
+        <div class="status-card">
+            <h3>监控日志</h3>
+            <div id="logContainer" class="log">
+                等待开始监控...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8000";
+        let monitoringInterval = null;
+        let isMonitoring = false;
+
+        function log(message) {
+            const logContainer = document.getElementById('logContainer');
+            const timestamp = new Date().toLocaleTimeString();
+            logContainer.innerHTML += `[${timestamp}] ${message}\n`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        async function startMonitoring() {
+            if (isMonitoring) return;
+            
+            isMonitoring = true;
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            
+            log('🔄 开始实时监控...');
+            
+            // 立即执行一次
+            await updateMetrics();
+            
+            // 每2秒更新一次
+            monitoringInterval = setInterval(updateMetrics, 2000);
+        }
+
+        function stopMonitoring() {
+            if (!isMonitoring) return;
+            
+            isMonitoring = false;
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            
+            if (monitoringInterval) {
+                clearInterval(monitoringInterval);
+                monitoringInterval = null;
+            }
+            
+            log('⏹️ 停止监控');
+        }
+
+        async function updateMetrics() {
+            try {
+                const startTime = performance.now();
+                
+                const response = await fetch(`${API_BASE}/api/v1/system/metrics`);
+                
+                const endTime = performance.now();
+                const clientLatency = Math.round(endTime - startTime);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const metrics = await response.json();
+                
+                // 更新显示
+                updateDisplay(metrics, clientLatency);
+                
+                log(`✅ 指标更新成功 - 延迟: ${clientLatency}ms, 队列: ${metrics.queue_size}`);
+                
+            } catch (error) {
+                log(`❌ 更新失败: ${error.message}`);
+                updateDisplay(null, -1);
+            }
+        }
+
+        function updateDisplay(metrics, clientLatency) {
+            const now = new Date().toLocaleTimeString();
+            document.getElementById('lastUpdate').textContent = now;
+            
+            if (metrics) {
+                // 系统状态
+                const systemStatus = document.getElementById('systemStatus');
+                systemStatus.textContent = `系统在线 - ${metrics.providers.available}/${metrics.providers.total} 提供者可用`;
+                systemStatus.className = 'status-online';
+                
+                // API延迟
+                const totalLatency = Math.round(metrics.api_latency + clientLatency);
+                const latencyElement = document.getElementById('apiLatency');
+                latencyElement.textContent = `${totalLatency} ms`;
+                latencyElement.className = `metric-value ${getLatencyClass(totalLatency)}`;
+                
+                // 队列大小
+                const queueElement = document.getElementById('queueSize');
+                queueElement.textContent = metrics.queue_size || 0;
+                queueElement.className = `metric-value ${getQueueClass(metrics.queue_size || 0)}`;
+                
+                // 其他指标
+                document.getElementById('availableProviders').textContent = metrics.providers.available || 0;
+                
+            } else {
+                // 离线状态
+                const systemStatus = document.getElementById('systemStatus');
+                systemStatus.textContent = '系统离线或无法连接';
+                systemStatus.className = 'status-offline';
+                
+                document.getElementById('apiLatency').textContent = '-- ms';
+                document.getElementById('queueSize').textContent = '--';
+            }
+        }
+
+        function getLatencyClass(latency) {
+            if (latency < 100) return 'latency-good';
+            if (latency < 500) return 'latency-medium';
+            return 'latency-bad';
+        }
+
+        function getQueueClass(queueSize) {
+            if (queueSize === 0) return 'latency-good';
+            if (queueSize < 3) return 'latency-medium';
+            return 'latency-bad';
+        }
+
+        async function testApiCall() {
+            log('🧪 测试API调用...');
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/system/ping`);
+                const result = await response.json();
+                log(`✅ API测试成功: ${JSON.stringify(result)}`);
+            } catch (error) {
+                log(`❌ API测试失败: ${error.message}`);
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('logContainer').innerHTML = '';
+        }
+
+        // 页面加载时自动开始监控
+        window.addEventListener('load', function() {
+            log('📱 页面加载完成');
+            startMonitoring();
+        });
+
+        // 页面卸载时清理
+        window.addEventListener('beforeunload', function() {
+            stopMonitoring();
+        });
+    </script>
+</body>
+</html>

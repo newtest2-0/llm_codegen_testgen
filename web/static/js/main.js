@@ -4,12 +4,18 @@ const API_BASE = "http://localhost:8000";
 let availableRoles = {};
 let currentRole = 'developer';
 
+// 实时监控相关变量
+let metricsInterval = null;
+let isMonitoringActive = false;
+
 // 测试JavaScript是否正常加载
 console.log('🚀 main.js 开始加载...');
 window.addEventListener('load', function() {
   console.log('📱 页面完全加载完成');
   // 页面加载完成后初始化角色
   initializeRoles();
+  // 启动实时系统监控
+  startSystemMonitoring();
 });
 
 async function getHealth(){
@@ -3174,3 +3180,143 @@ function getCurrentRolePrompt() {
   }
   return '请根据需求编写高质量的代码。';
 }
+
+// 实时系统监控功能
+async function startSystemMonitoring() {
+  if (isMonitoringActive) return;
+  
+  isMonitoringActive = true;
+  console.log('🔄 启动实时系统监控...');
+  
+  // 立即执行一次
+  await updateSystemMetrics();
+  
+  // 每3秒更新一次指标
+  metricsInterval = setInterval(async () => {
+    await updateSystemMetrics();
+  }, 3000);
+}
+
+function stopSystemMonitoring() {
+  if (metricsInterval) {
+    clearInterval(metricsInterval);
+    metricsInterval = null;
+  }
+  isMonitoringActive = false;
+  console.log('⏹️ 停止实时系统监控');
+}
+
+async function updateSystemMetrics() {
+  try {
+    const startTime = performance.now();
+    
+    // 调用系统指标API
+    const response = await fetch(`${API_BASE}/api/v1/system/metrics`);
+    
+    const endTime = performance.now();
+    const clientLatency = Math.round(endTime - startTime);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    const metrics = await response.json();
+    
+    // 更新UI显示
+    updateMetricsDisplay(metrics, clientLatency);
+    
+  } catch (error) {
+    console.error('❌ 获取系统指标失败:', error);
+    updateMetricsDisplay(null, -1);
+  }
+}
+
+function updateMetricsDisplay(metrics, clientLatency) {
+  // 更新延迟显示
+  const latencyElement = document.getElementById('apiLatency');
+  if (latencyElement) {
+    if (metrics && metrics.api_latency >= 0) {
+      const totalLatency = Math.round(metrics.api_latency + clientLatency);
+      latencyElement.textContent = `${totalLatency} ms`;
+      latencyElement.className = getLatencyColorClass(totalLatency);
+    } else {
+      latencyElement.textContent = '-- ms';
+      latencyElement.className = 'text-2xl font-bold text-red-600';
+    }
+  }
+  
+  // 更新队列大小
+  const queueElement = document.getElementById('queueSize');
+  if (queueElement) {
+    if (metrics) {
+      queueElement.textContent = metrics.queue_size || 0;
+      queueElement.className = getQueueColorClass(metrics.queue_size || 0);
+    } else {
+      queueElement.textContent = '--';
+      queueElement.className = 'text-2xl font-bold text-gray-500';
+    }
+  }
+  
+  // 更新系统状态
+  updateSystemStatus(metrics);
+}
+
+function getLatencyColorClass(latency) {
+  if (latency < 0) return 'text-2xl font-bold text-red-600';
+  if (latency < 100) return 'text-2xl font-bold text-blue-800';
+  if (latency < 500) return 'text-2xl font-bold text-yellow-600';
+  return 'text-2xl font-bold text-red-600';
+}
+
+function getQueueColorClass(queueSize) {
+  if (queueSize === 0) return 'text-2xl font-bold text-green-800';
+  if (queueSize < 3) return 'text-2xl font-bold text-yellow-600';
+  return 'text-2xl font-bold text-red-600';
+}
+
+function updateSystemStatus(metrics) {
+  const sysElement = document.getElementById("sys");
+  if (!sysElement) return;
+  
+  if (metrics && metrics.system && metrics.system.status === 'online') {
+    const providerCount = metrics.providers ? metrics.providers.available : 0;
+    const providerNames = metrics.providers ? metrics.providers.names : [];
+    
+    sysElement.innerHTML = `
+      <div class="flex items-center gap-2 text-green-600 text-sm">
+        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+        <span>服务在线</span>
+      </div>
+      <div class="text-gray-500 text-xs mt-1">
+        模型: ${providerNames.slice(0, 3).join(", ")}${providerNames.length > 3 ? '...' : ''}
+      </div>
+      <div class="text-gray-400 text-xs mt-1">
+        ${providerCount} 个提供者可用
+      </div>
+    `;
+  } else {
+    sysElement.innerHTML = `
+      <div class="flex items-center gap-2 text-red-600 text-sm">
+        <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+        <span>连接失败</span>
+      </div>
+      <div class="text-gray-500 text-xs mt-1">无法获取系统状态</div>
+    `;
+  }
+}
+
+// 页面可见性变化时控制监控
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    // 页面隐藏时停止监控以节省资源
+    stopSystemMonitoring();
+  } else {
+    // 页面重新可见时恢复监控
+    startSystemMonitoring();
+  }
+});
+
+// 页面卸载时清理
+window.addEventListener('beforeunload', function() {
+  stopSystemMonitoring();
+});

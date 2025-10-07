@@ -12,6 +12,7 @@ from models import GenerateRequest, GenerateResponse, CodeArtifact
 from core.providers import ProviderManager
 from core.evaluators.test_generator import IntelligentTestGenerator
 from core.api_key_storage import api_key_storage
+from .system import metrics
 
 logger = logging.getLogger(__name__)
 class RefineRequirementRequest(BaseModel):
@@ -108,6 +109,8 @@ async def generate_code(request: GenerateRequest, req: Request):
     Returns:
         代码生成响应
     """
+    # 开始请求跟踪
+    start_time = metrics.start_request()
     # 获取提供者管理器
     provider_manager: ProviderManager = req.app.state.provider_manager
     
@@ -247,6 +250,10 @@ def test_placeholder():
 """
     
     logger.info(f"会话 {session_id} 代码生成完成，共生成 {len(artifacts)} 个方案")
+    
+    # 结束请求跟踪
+    response_time = metrics.end_request(start_time)
+    logger.info(f"请求处理时间: {response_time:.2f}ms")
     
     return GenerateResponse(
         session_id=session_id,
