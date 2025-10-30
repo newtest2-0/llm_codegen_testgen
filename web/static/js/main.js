@@ -1376,6 +1376,9 @@ function createResultCard(result, index) {
   const score = Math.round((result.metrics?.aggregate_score || 0) * 100);
   const provider = result.provider || `方案${index + 1}`;
   
+  // 获取增强指标
+  const enhancedMetrics = result.metrics?.enhanced_metrics || {};
+  
   div.innerHTML = `
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-semibold text-gray-900">${provider}</h3>
@@ -1388,7 +1391,7 @@ function createResultCard(result, index) {
     <div class="space-y-3 mb-4">
       <div class="flex justify-between">
         <span class="text-sm text-gray-600">BLEU-4分数:</span>
-<span class="font-medium">${Math.round((result.metrics?.bleu4 || 0) * 100)}</span>
+        <span class="font-medium">${Math.round((result.metrics?.bleu4 || 0) * 100)}</span>
       </div>
       <div class="flex justify-between">
         <span class="text-sm text-gray-600">测试通过率:</span>
@@ -1397,6 +1400,26 @@ function createResultCard(result, index) {
       <div class="flex justify-between">
         <span class="text-sm text-gray-600">AST解析:</span>
         <span class="font-medium">${result.metrics?.ast_parse_ok ? '✅' : '❌'}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">可维护性指数:</span>
+        <span class="font-medium">${Math.round((enhancedMetrics.maintainability_index || 0) * 100)}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">代码风格得分:</span>
+        <span class="font-medium">${Math.round((enhancedMetrics.style_score || 0) * 100)}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">安全性得分:</span>
+        <span class="font-medium">${Math.round((enhancedMetrics.security_score || 0) * 100)}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">文档覆盖率:</span>
+        <span class="font-medium">${Math.round((enhancedMetrics.docstring_coverage || 0) * 100)}%</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-sm text-gray-600">圈复杂度:</span>
+        <span class="font-medium">${result.metrics?.cyclomatic || 0}</span>
       </div>
     </div>
     
@@ -1416,6 +1439,89 @@ function createResultCard(result, index) {
           </div>
           <pre id="code${index}Code" class="p-4 overflow-auto max-h-96 font-mono text-sm">${result._code || ''}</pre>
         </div>
+      </div>
+    </details>
+    
+    <!-- 增强指标详情 -->
+    <details class="group mt-3">
+      <summary class="cursor-pointer flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+        <i class="fas fa-chart-bar text-gray-600"></i>
+        <span class="font-medium text-gray-900">详细指标</span>
+        <i class="fas fa-chevron-down group-open:rotate-180 transition-transform ml-auto text-gray-400"></i>
+      </summary>
+      <div class="mt-3 bg-gray-50 rounded-lg p-4">
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div>
+            <span class="text-gray-600">ROUGE-1:</span>
+            <span class="font-medium ml-2">${Math.round(((result.metrics?.rouge?.rouge1 || 0) * 100))}</span>
+          </div>
+          <div>
+            <span class="text-gray-600">ROUGE-2:</span>
+            <span class="font-medium ml-2">${Math.round(((result.metrics?.rouge?.rouge2 || 0) * 100))}</span>
+          </div>
+          <div>
+            <span class="text-gray-600">ROUGE-L:</span>
+            <span class="font-medium ml-2">${Math.round(((result.metrics?.rouge?.rougeL || 0) * 100))}</span>
+          </div>
+          <div>
+            <span class="text-gray-600">Pass@1:</span>
+            <span class="font-medium ml-2">${Math.round(((result.metrics?.pass_at_k?.pass_at_1 || 0) * 100))}%</span>
+          </div>
+          <div>
+            <span class="text-gray-600">Pass@10:</span>
+            <span class="font-medium ml-2">${Math.round(((result.metrics?.pass_at_k?.pass_at_10 || 0) * 100))}%</span>
+          </div>
+          <div>
+            <span class="text-gray-600">AST节点数:</span>
+            <span class="font-medium ml-2">${result.metrics?.ast_nodes || 0}</span>
+          </div>
+        </div>
+        
+        <!-- 安全问题和代码异味 -->
+        ${(enhancedMetrics.security_issues && enhancedMetrics.security_issues.length > 0) ? `
+        <div class="mt-3">
+          <div class="text-sm font-medium text-gray-900 mb-2">安全问题 (${enhancedMetrics.security_issues.length})</div>
+          <ul class="text-xs space-y-1">
+            ${enhancedMetrics.security_issues.slice(0, 3).map(issue => `
+              <li class="flex items-start">
+                <span class="text-red-500 mr-1">•</span>
+                <span>${issue.message} (第${issue.line}行)</span>
+              </li>
+            `).join('')}
+            ${enhancedMetrics.security_issues.length > 3 ? `<li class="text-gray-500">... 还有${enhancedMetrics.security_issues.length - 3}个问题</li>` : ''}
+          </ul>
+        </div>
+        ` : ''}
+        
+        ${(enhancedMetrics.style_violations && enhancedMetrics.style_violations.length > 0) ? `
+        <div class="mt-3">
+          <div class="text-sm font-medium text-gray-900 mb-2">代码风格问题 (${enhancedMetrics.style_violations.length})</div>
+          <ul class="text-xs space-y-1">
+            ${enhancedMetrics.style_violations.slice(0, 3).map(violation => `
+              <li class="flex items-start">
+                <span class="text-yellow-500 mr-1">•</span>
+                <span>${violation.message} (第${violation.line}行)</span>
+              </li>
+            `).join('')}
+            ${enhancedMetrics.style_violations.length > 3 ? `<li class="text-gray-500">... 还有${enhancedMetrics.style_violations.length - 3}个问题</li>` : ''}
+          </ul>
+        </div>
+        ` : ''}
+        
+        ${(enhancedMetrics.code_smells && enhancedMetrics.code_smells.length > 0) ? `
+        <div class="mt-3">
+          <div class="text-sm font-medium text-gray-900 mb-2">代码异味 (${enhancedMetrics.code_smells.length})</div>
+          <ul class="text-xs space-y-1">
+            ${enhancedMetrics.code_smells.slice(0, 3).map(smell => `
+              <li class="flex items-start">
+                <span class="text-orange-500 mr-1">•</span>
+                <span>${smell}</span>
+              </li>
+            `).join('')}
+            ${enhancedMetrics.code_smells.length > 3 ? `<li class="text-gray-500">... 还有${enhancedMetrics.code_smells.length - 3}个问题</li>` : ''}
+          </ul>
+        </div>
+        ` : ''}
       </div>
     </details>
   `;

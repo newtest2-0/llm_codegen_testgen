@@ -9,6 +9,8 @@ from typing import List, Dict, Any, Optional
 from models import EvaluateRequest, EvaluateResponse, EvalResult, EvalMetrics
 from core.evaluators.code_quality import ComprehensiveCodeEvaluator, CodeQualityMetrics
 from core.evaluators.scoring_metrics import AdvancedScoringMetrics
+from core.evaluators.test_generator import IntelligentTestGenerator
+from core.evaluators.test_executor import TestExecutor
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -42,6 +44,11 @@ async def evaluate_code(request: EvaluateRequest, req: Request):
         # 初始化综合评估器
         evaluator = ComprehensiveCodeEvaluator()
         
+        # 初始化测试生成器和执行器
+        provider_manager = req.app.state.provider_manager
+        test_generator = IntelligentTestGenerator(provider_manager)
+        test_executor = TestExecutor()
+        
         results = []
         
         for artifact in request.artifacts:
@@ -53,13 +60,23 @@ async def evaluate_code(request: EvaluateRequest, req: Request):
                 requirement=getattr(request, 'requirement', None)
             )
             
+            # 生成测试代码
+            tests_code = await test_generator.generate_tests_for_code(
+                code=artifact.code,
+                requirement=getattr(request, 'requirement', ""),
+                provider_name=artifact.provider
+            )
+            
+            # 执行测试并收集结果
+            test_results = test_executor.run_tests(artifact.code, tests_code)
+            passed_tests = test_results["passed_tests"]
+            total_tests = test_results["total_tests"]
+            
             # 初始化高级评分指标计算器
             scoring_metrics = AdvancedScoringMetrics()
             
-            # 计算新的评分指标（这里使用示例数据，实际应用中应根据具体情况获取参考代码和测试结果）
-            reference_codes = [artifact.code]  # 示例：使用当前代码作为参考
-            passed_tests = 1 if quality_metrics.overall_score > 0.7 else 0
-            total_tests = 1
+            # 计算新的评分指标
+            reference_codes = [artifact.code]  # 使用当前代码作为参考
             
             advanced_scores = scoring_metrics.evaluate_generated_code(
                 generated_code=artifact.code,
@@ -127,12 +144,13 @@ async def evaluate_code(request: EvaluateRequest, req: Request):
         raise HTTPException(status_code=500, detail=f"代码评估失败: {str(e)}")
 
 @router.post("/quick-evaluate", response_model=QuickEvaluateResponse)
-async def quick_evaluate(request: QuickEvaluateRequest):
+async def quick_evaluate(request: QuickEvaluateRequest, req: Request):
     """
     快速评估单个代码片段
     
     Args:
         request: 快速评估请求
+        req: FastAPI请求对象
         
     Returns:
         快速评估结果
@@ -152,10 +170,25 @@ async def quick_evaluate(request: QuickEvaluateRequest):
         # 初始化高级评分指标计算器
         scoring_metrics = AdvancedScoringMetrics()
         
-        # 计算新的评分指标（这里使用示例数据）
-        reference_codes = [request.code]  # 示例：使用当前代码作为参考
-        passed_tests = 1 if metrics.overall_score > 0.7 else 0
-        total_tests = 1
+        # 生成并执行测试来获取真实的测试结果
+        provider_manager = req.app.state.provider_manager
+        test_generator = IntelligentTestGenerator(provider_manager)
+        test_executor = TestExecutor()
+        
+        # 生成测试代码
+        tests_code = await test_generator.generate_tests_for_code(
+            code=request.code,
+            requirement=request.requirement or "",
+            provider_name="default"
+        )
+        
+        # 执行测试并收集结果
+        test_results = test_executor.run_tests(request.code, tests_code)
+        passed_tests = test_results["passed_tests"]
+        total_tests = test_results["total_tests"]
+        
+        # 计算新的评分指标
+        reference_codes = [request.code]  # 使用当前代码作为参考
         
         advanced_scores = scoring_metrics.evaluate_generated_code(
             generated_code=request.code,
