@@ -8,6 +8,7 @@ from typing import List, Dict, Any, Optional
 
 from models import EvaluateRequest, EvaluateResponse, EvalResult, EvalMetrics
 from core.evaluators.code_quality import ComprehensiveCodeEvaluator, CodeQualityMetrics
+from core.evaluators.scoring_metrics import AdvancedScoringMetrics
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -52,17 +53,34 @@ async def evaluate_code(request: EvaluateRequest, req: Request):
                 requirement=getattr(request, 'requirement', None)
             )
             
+            # 初始化高级评分指标计算器
+            scoring_metrics = AdvancedScoringMetrics()
+            
+            # 计算新的评分指标（这里使用示例数据，实际应用中应根据具体情况获取参考代码和测试结果）
+            reference_codes = [artifact.code]  # 示例：使用当前代码作为参考
+            passed_tests = 1 if quality_metrics.overall_score > 0.7 else 0
+            total_tests = 1
+            
+            advanced_scores = scoring_metrics.evaluate_generated_code(
+                generated_code=artifact.code,
+                reference_codes=reference_codes,
+                passed_tests=passed_tests,
+                total_tests=total_tests
+            )
+            
             # 转换为原有的评估格式
             eval_metrics = EvalMetrics(
-                bleu=0.8,  # 占位符，实际需要实现BLEU计算
+                bleu4=advanced_scores['bleu4'],
+                rouge=advanced_scores['rouge'],
+                pass_at_k=advanced_scores['pass_at_k'],
                 ast_parse_ok=quality_metrics.ast_quality_score > 0,
                 ast_nodes=quality_metrics.lines_of_code,
                 cyclomatic=quality_metrics.cyclomatic_complexity,
                 tests={
                     "supported": True,
-                    "passed": 1 if quality_metrics.overall_score > 0.7 else 0,
-                    "failed": 0 if quality_metrics.overall_score > 0.7 else 1,
-                    "exit_code": 0 if quality_metrics.overall_score > 0.7 else 1
+                    "passed": passed_tests,
+                    "failed": total_tests - passed_tests,
+                    "exit_code": 0 if passed_tests > 0 else 1
                 },
                 aggregate_score=quality_metrics.overall_score,
                 # 添加详细的质量指标
@@ -131,9 +149,27 @@ async def quick_evaluate(request: QuickEvaluateRequest):
         # 生成改进建议
         recommendations = _generate_recommendations(metrics)
         
+        # 初始化高级评分指标计算器
+        scoring_metrics = AdvancedScoringMetrics()
+        
+        # 计算新的评分指标（这里使用示例数据）
+        reference_codes = [request.code]  # 示例：使用当前代码作为参考
+        passed_tests = 1 if metrics.overall_score > 0.7 else 0
+        total_tests = 1
+        
+        advanced_scores = scoring_metrics.evaluate_generated_code(
+            generated_code=request.code,
+            reference_codes=reference_codes,
+            passed_tests=passed_tests,
+            total_tests=total_tests
+        )
+        
         # 构建响应
         metrics_dict = {
             "overall_score": metrics.overall_score,
+            "bleu4": advanced_scores['bleu4'],
+            "rouge": advanced_scores['rouge'],
+            "pass_at_k": advanced_scores['pass_at_k'],
             "maintainability_index": metrics.maintainability_index,
             "style_score": metrics.style_score,
             "security_score": metrics.security_score,

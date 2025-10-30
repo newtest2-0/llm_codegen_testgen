@@ -49,7 +49,7 @@ class Config:
             "providers": [],
             "scoring": {
                 "weights": {
-                    "bleu": 0.35,
+                    "bleu4": 0.35,
                     "tests_pass_rate": 0.45,
                     "ast_quality": 0.2
                 }

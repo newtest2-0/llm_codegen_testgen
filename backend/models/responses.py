@@ -6,7 +6,9 @@ from typing import List, Dict, Any, Optional
 
 class EvalMetrics(BaseModel):
     """评估指标模型"""
-    bleu: float = Field(..., description="BLEU分数")
+    bleu4: float = Field(..., description="BLEU-4分数")
+    rouge: Dict[str, float] = Field(..., description="ROUGE分数")
+    pass_at_k: Dict[str, float] = Field(..., description="pass@k分数")
     ast_parse_ok: bool = Field(..., description="AST解析是否成功")
     ast_nodes: int = Field(..., description="AST节点数量")
     cyclomatic: float = Field(..., description="圈复杂度")

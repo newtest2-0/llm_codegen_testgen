@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8000";
+const API_BASE = "http://localhost:8001";
 
 // 全局变量存储角色信息
 let availableRoles = {};
@@ -241,8 +241,28 @@ function card(result){
         <h4 class="font-medium text-gray-900 mb-3 text-sm">性能指标</h4>
         <div class="space-y-2 text-sm">
           <div class="flex justify-between">
-            <span class="text-gray-600">BLEU</span>
-            <span class="font-medium text-gray-900">${m.bleu.toFixed(3)}</span>
+            <span class="text-gray-600">BLEU-4</span>
+            <span class="font-medium text-gray-900">${m.bleu4.toFixed(3)}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">ROUGE-1</span>
+            <span class="font-medium text-gray-900">${m.rouge?.rouge1?.toFixed(3) || '0.000'}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">ROUGE-2</span>
+            <span class="font-medium text-gray-900">${m.rouge?.rouge2?.toFixed(3) || '0.000'}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">ROUGE-L</span>
+            <span class="font-medium text-gray-900">${m.rouge?.rougeL?.toFixed(3) || '0.000'}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Pass@1</span>
+            <span class="font-medium text-gray-900">${m.pass_at_k?.['pass@1']?.toFixed(3) || '0.000'}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Pass@10</span>
+            <span class="font-medium text-gray-900">${m.pass_at_k?.['pass@10']?.toFixed(3) || '0.000'}</span>
           </div>
           <div class="flex justify-between">
             <span class="text-gray-600">AST</span>
@@ -1367,8 +1387,8 @@ function createResultCard(result, index) {
     
     <div class="space-y-3 mb-4">
       <div class="flex justify-between">
-        <span class="text-sm text-gray-600">BLEU分数:</span>
-        <span class="font-medium">${Math.round((result.metrics?.bleu || 0) * 100)}</span>
+        <span class="text-sm text-gray-600">BLEU-4分数:</span>
+<span class="font-medium">${Math.round((result.metrics?.bleu4 || 0) * 100)}</span>
       </div>
       <div class="flex justify-between">
         <span class="text-sm text-gray-600">测试通过率:</span>
@@ -1415,7 +1435,7 @@ function displayWinner(winner) {
   
   winnerMeta.textContent = `提供者: ${winner.provider || '未知'}
 总分: ${score}/100
-BLEU分数: ${Math.round((winner.metrics?.bleu || 0) * 100)}
+BLEU-4分数: ${Math.round((winner.metrics?.bleu4 || 0) * 100)}
 测试通过: ${winner.metrics?.tests?.passed || 0}/${(winner.metrics?.tests?.passed || 0) + (winner.metrics?.tests?.failed || 0)}
 AST解析: ${winner.metrics?.ast_parse_ok ? '✅' : '❌'}`;
   
