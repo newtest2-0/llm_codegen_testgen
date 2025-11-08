@@ -1,0 +1,52 @@
+{
+  "version": "1.0",
+  "updated_at": "2025-11-08T10:33:39.636185",
+  "count": 3,
+  "entries": [
+    {
+      "id": "27df3449-205b-4db6-b3c0-83bd0588ce07",
+      "requirement": "实现快速排序算法，支持升序降序",
+      "code": "def quick_sort(arr, reverse=False):\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    if reverse:\n        return quick_sort(right, True) + middle + quick_sort(left, True)\n    return quick_sort(left) + middle + quick_sort(right)",
+      "language": "python",
+      "tags": [
+        "algorithm",
+        "sorting"
+      ],
+      "quality_score": 0.92,
+      "test_results": {
+        "passed": true,
+        "coverage": 0.95
+      },
+      "metadata": {},
+      "created_at": "2025-11-08T10:33:39.633399"
+    },
+    {
+      "id": "dc7ec086-5cfc-4f21-80b5-72279512fe56",
+      "requirement": "实现二分查找算法，在有序数组中查找目标值",
+      "code": "def binary_search(arr, target):\n    left, right = 0, len(arr) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1",
+      "language": "python",
+      "tags": [
+        "algorithm",
+        "search"
+      ],
+      "quality_score": 0.95,
+      "test_results": {},
+      "metadata": {},
+      "created_at": "2025-11-08T10:33:39.635297"
+    },
+    {
+      "id": "29ad3a76-27fd-45b0-aa9c-47bbf0c02d55",
+      "requirement": "实现用户认证系统，支持JWT token",
+      "code": "import jwt\ndef authenticate(username, password):\n    # 验证逻辑\n    token = jwt.encode({'user': username}, SECRET_KEY)\n    return token",
+      "language": "python",
+      "tags": [
+        "security",
+        "api"
+      ],
+      "quality_score": 0.88,
+      "test_results": {},
+      "metadata": {},
+      "created_at": "2025-11-08T10:33:39.636180"
+    }
+  ]
+}

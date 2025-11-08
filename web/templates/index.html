@@ -710,6 +710,13 @@
               <i class="fas fa-cog"></i>
               <span class="hidden sm:inline">系统设置</span>
             </button>
+            
+            <!-- RAG知识库按钮 -->
+            <button onclick="KnowledgeSystem.showBrowser(); return false;" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-all duration-200 ml-2">
+              <i class="fas fa-database"></i>
+              <span class="hidden sm:inline">知识库</span>
+              <span class="px-2 py-0.5 text-xs bg-purple-100 text-purple-800 rounded-full font-semibold">NEW</span>
+            </button>
           </nav>
           
           <!-- 状态指示器 -->
@@ -2891,6 +2898,7 @@ def get_user(user_id):
 
   <script src="../static/js/diagram_system.js"></script>
   <script src="../static/js/review_system.js"></script>
+  <script src="../static/js/knowledge_system.js"></script>
   <script src="../static/js/main.js"></script>
 </body>
 </html>

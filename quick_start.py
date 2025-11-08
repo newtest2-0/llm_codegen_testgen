@@ -74,6 +74,7 @@ def main():
         print("  - AI自动生成图表")
         print("  - 基于图表生成代码")
         print("  - LLM智能评阅系统")
+        print("  - RAG知识库系统（NEW!）")
         print("  - 完整工作流自动化")
         print("=" * 70)
         print()

@@ -1,0 +1,59 @@
+{
+  "version": "1.0",
+  "updated_at": "2024-11-08T12:00:00",
+  "count": 3,
+  "entries": [
+    {
+      "id": "abc123",
+      "requirement": "实现一个快速排序算法，支持升序和降序，要求时间复杂度O(nlogn)",
+      "code": "def quick_sort(arr, reverse=False):\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    if reverse:\n        return quick_sort(right, reverse) + middle + quick_sort(left, reverse)\n    return quick_sort(left, reverse) + middle + quick_sort(right, reverse)",
+      "language": "python",
+      "tags": ["algorithm", "sorting", "quicksort"],
+      "quality_score": 0.92,
+      "test_results": {
+        "passed": true,
+        "coverage": 0.95
+      },
+      "metadata": {
+        "auto_saved": true,
+        "provider": "openai"
+      },
+      "created_at": "2024-11-08T10:30:00"
+    },
+    {
+      "id": "def456",
+      "requirement": "实现用户认证系统，支持JWT token，包括登录、注销、token刷新功能",
+      "code": "import jwt\nfrom datetime import datetime, timedelta\n\nclass AuthSystem:\n    def __init__(self, secret_key):\n        self.secret_key = secret_key\n    \n    def login(self, username, password):\n        # 验证用户名密码\n        if self.verify_credentials(username, password):\n            token = jwt.encode({\n                'user': username,\n                'exp': datetime.utcnow() + timedelta(hours=24)\n            }, self.secret_key, algorithm='HS256')\n            return {'token': token, 'expires_in': 86400}\n        return None\n    \n    def verify_token(self, token):\n        try:\n            payload = jwt.decode(token, self.secret_key, algorithms=['HS256'])\n            return payload['user']\n        except jwt.ExpiredSignatureError:\n            return None",
+      "language": "python",
+      "tags": ["security", "authentication", "jwt", "api"],
+      "quality_score": 0.88,
+      "test_results": {
+        "passed": true,
+        "coverage": 0.90
+      },
+      "metadata": {
+        "auto_saved": true,
+        "provider": "deepseek"
+      },
+      "created_at": "2024-11-08T11:15:00"
+    },
+    {
+      "id": "ghi789",
+      "requirement": "实现二分查找算法，在有序数组中查找目标值，返回索引，不存在返回-1",
+      "code": "def binary_search(arr, target):\n    left, right = 0, len(arr) - 1\n    \n    while left <= right:\n        mid = (left + right) // 2\n        \n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    \n    return -1",
+      "language": "python",
+      "tags": ["algorithm", "search", "binary-search"],
+      "quality_score": 0.95,
+      "test_results": {
+        "passed": true,
+        "coverage": 1.0
+      },
+      "metadata": {
+        "auto_saved": true,
+        "provider": "claude"
+      },
+      "created_at": "2024-11-08T11:45:00"
+    }
+  ]
+}
+
