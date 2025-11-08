@@ -1,11 +1,23 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 前端静态文件服务器
 """
 import http.server
 import socketserver
 import os
+import sys
+import platform
+import io
 from pathlib import Path
+
+# 设置Windows控制台UTF-8编码
+if platform.system().lower() == 'windows':
+    try:
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+    except:
+        pass
 
 def main():
     """启动前端服务器"""
@@ -31,13 +43,22 @@ def main():
             
             return super().do_GET()
     
+    print("=" * 70)
+    print("  [Frontend] Professional Code Development Platform")
+    print("  Frontend Static File Server")
+    print("=" * 70)
+    print()
+    print(f"[OK] 前端服务已启动: http://localhost:{PORT}")
+    print(f"[Info] 静态文件目录: {web_dir}")
+    print(f"[Info] 按 Ctrl+C 停止服务")
+    print("=" * 70)
+    print()
+    
     with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
-        print(f"✅ 前端服务已启动: http://localhost:{PORT}")
-        print("按 Ctrl+C 停止服务")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print("\n👋 前端服务已停止")
+            print("\n[Info] 前端服务已停止")
 
 if __name__ == "__main__":
     main()

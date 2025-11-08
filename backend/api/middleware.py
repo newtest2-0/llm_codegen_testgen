@@ -32,7 +32,7 @@ def setup_middleware(app: FastAPI) -> None:
         start_time = time.time()
         
         # 记录请求开始
-        logger.info(f"🔄 {request.method} {request.url}")
+        logger.info(f"[Request] {request.method} {request.url}")
         
         # 处理请求
         response = await call_next(request)
@@ -42,7 +42,7 @@ def setup_middleware(app: FastAPI) -> None:
         
         # 记录响应
         logger.info(
-            f"✅ {request.method} {request.url} - "
+            f"[Response] {request.method} {request.url} - "
             f"状态码: {response.status_code} - "
             f"耗时: {process_time:.3f}s"
         )
@@ -59,6 +59,6 @@ def setup_middleware(app: FastAPI) -> None:
         try:
             return await call_next(request)
         except Exception as e:
-            logger.error(f"❌ 请求处理错误: {request.method} {request.url} - {str(e)}")
+            logger.error(f"[ERROR] 请求处理错误: {request.method} {request.url} - {str(e)}")
             # 这里可以返回自定义错误响应
             raise

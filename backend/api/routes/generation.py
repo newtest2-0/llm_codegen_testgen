@@ -85,7 +85,7 @@ async def refine_requirement(request: RefineRequirementRequest, req: Request):
             extra_directives="输出简洁明确的功能需求描述，避免复杂的技术文档格式"
         )
         
-        logger.info(f"✅ 需求优化完成")
+        logger.info("[OK] 需求优化完成")
         
         return RefineRequirementResponse(
             refined_requirement=refined_requirement,
@@ -94,7 +94,7 @@ async def refine_requirement(request: RefineRequirementRequest, req: Request):
         )
         
     except Exception as e:
-        logger.error(f"❌ 需求优化失败: {e}")
+        logger.error(f"[ERROR] 需求优化失败: {e}")
         raise HTTPException(status_code=500, detail=f"需求优化失败: {str(e)}")
 
 @router.post("/generate", response_model=GenerateResponse)
@@ -147,14 +147,14 @@ async def generate_code(request: GenerateRequest, req: Request):
                 language=request.language,
                 extra_directives=request.extra_directives
             )
-            logger.info(f"✅ {provider_name} 代码生成完成")
+            logger.info(f"[OK] {provider_name} 代码生成完成")
             return CodeArtifact(
                 provider=provider_name,
                 model=provider.model,
                 code=code
             )
         except Exception as e:
-            logger.error(f"❌ {provider_name} 代码生成失败: {e}")
+            logger.error(f"[ERROR] {provider_name} 代码生成失败: {e}")
             # 返回错误代码而不是抛出异常
             return CodeArtifact(
                 provider=provider_name,
@@ -190,10 +190,10 @@ async def generate_code(request: GenerateRequest, req: Request):
                 role_prompt=request.role_prompt
             )
             
-            logger.info("✅ 智能测试用例生成完成")
+            logger.info("[OK] 智能测试用例生成完成")
             
         except Exception as e:
-            logger.error(f"❌ 智能测试生成失败，使用基础测试: {e}")
+            logger.error(f"[ERROR] 智能测试生成失败，使用基础测试: {e}")
             # 如果智能生成失败，回退到基础方法
             test_provider = provider_manager.get_provider(test_provider_name)
             if test_provider:
@@ -209,9 +209,9 @@ async def generate_code(request: GenerateRequest, req: Request):
                         language="python",
                         extra_directives="生成pytest格式的测试代码"
                     )
-                    logger.info("✅ 基础测试用例生成完成")
+                    logger.info("[OK] 基础测试用例生成完成")
                 except Exception as e2:
-                    logger.error(f"❌ 基础测试生成也失败: {e2}")
+                    logger.error(f"[ERROR] 基础测试生成也失败: {e2}")
                     # 最终回退到静态测试模板
                     tests_code = f"""# 测试用例生成失败，使用基础模板
 import pytest
@@ -236,7 +236,7 @@ def test_error_handling():
     assert True, "请添加异常处理测试"
 """
             else:
-                logger.error(f"❌ 测试提供者 {test_provider_name} 不可用")
+                logger.error(f"[ERROR] 测试提供者 {test_provider_name} 不可用")
                 tests_code = f"""# 测试提供者不可用，使用静态模板
 import pytest
 

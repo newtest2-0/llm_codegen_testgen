@@ -1,16 +1,26 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-CodeForge - 智能代码生成平台
-快速启动脚本（根目录简化版）
+Professional Code Development Platform
+智能代码生成平台 - 快速启动脚本（根目录简化版）
 """
 import sys
 import subprocess
 from pathlib import Path
+import platform
+import io
+
+# 设置Windows控制台UTF-8编码
+if platform.system().lower() == 'windows':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 def main():
     """快速启动主函数"""
-    print("🚀 CodeForge 智能代码生成平台 - 快速启动")
-    print("=" * 50)
+    print("=" * 60)
+    print("Professional Code Development Platform")
+    print("智能代码生成平台 - 快速启动")
+    print("=" * 60)
     
     # 调用tools目录中的详细启动脚本
     tools_script = Path("tools") / "run.py"

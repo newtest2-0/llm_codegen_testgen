@@ -37,10 +37,10 @@ class Config:
             with open(self.config_path, "r", encoding="utf-8") as f:
                 self._config = json.load(f)
         except FileNotFoundError:
-            print(f"⚠️  配置文件未找到: {self.config_path}")
+            print(f"[WARN] 配置文件未找到: {self.config_path}")
             self._config = self._get_default_config()
         except json.JSONDecodeError as e:
-            print(f"❌ 配置文件格式错误: {e}")
+            print(f"[ERROR] 配置文件格式错误: {e}")
             self._config = self._get_default_config()
     
     def _get_default_config(self) -> Dict[str, Any]:

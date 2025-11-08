@@ -3,10 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CodeForge - 智能代码开发平台</title>
+  <title>Professional Code Development Platform - 智能代码开发平台</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Mermaid.js for UML diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     :root {
       --primary: #1a1a1a;
@@ -628,6 +630,37 @@
       transform: scale(1.05) !important;
     }
     
+    /* 图表面板样式 */
+    .diagram-panel {
+      display: none;
+    }
+    
+    .diagram-panel.active {
+      display: block;
+    }
+    
+    .diagram-tab.active {
+      font-weight: 600;
+    }
+    
+    /* Mermaid图表容器样式 */
+    .mermaid {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+    }
+    
+    /* 图表代码编辑器样式 */
+    #detailedRequirement-diagram-code,
+    #architectureDesign-diagram-code,
+    #detailedDesign-diagram-code,
+    #requirementToArchitecture-diagram-code,
+    #requirementToDesign-diagram-code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      line-height: 1.6;
+    }
+    
     @keyframes buttonPulse {
       0%, 100% {
         transform: scale(1);
@@ -650,7 +683,7 @@
             <i class="fas fa-code text-white text-sm"></i>
           </div>
           <div>
-            <h1 class="text-lg font-semibold text-gray-900">CodeForge</h1>
+            <h1 class="text-lg font-semibold text-gray-900">Professional Code Development Platform</h1>
             <div class="flex items-center gap-2">
               <span class="status-dot status-online"></span>
               <span class="text-xs text-gray-500">在线</span>
@@ -708,11 +741,10 @@
         <!-- 主标题区域 -->
         <div class="text-center mb-12 animate-slide-up">
           <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
-            Professional Code
-            <span class="gradient-text block">Development Platform</span>
+            Professional Code Development Platform
           </h2>
           <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            高效的代码生成与质量保障解决方案，为现代软件开发提供智能化工具支持
+            高效的代码生成与质量保障解决方案,为现代软件开发提供智能化工具支持
           </p>
         </div>
 
@@ -770,6 +802,62 @@
                     <div class="nav-indicator w-2 h-2 bg-blue-600 rounded-full opacity-0 transition-opacity"></div>
                   </a>
                   
+                  <!-- 新增: 开发流程模块 -->
+                  <div class="ml-4 pl-3 border-l-2 border-gray-200 space-y-1 mt-2">
+                    <div class="px-3 py-1.5">
+                      <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">开发流程文档</span>
+                    </div>
+                    <a href="#detailed-requirement-section" class="nav-link group flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-blue-50 group-hover:bg-blue-100 rounded flex items-center justify-center transition-colors">
+                          <i class="fas fa-list-alt text-xs text-blue-600"></i>
+                        </div>
+                        <span class="text-xs">详细需求描述</span>
+                      </div>
+                      <div class="nav-indicator w-1.5 h-1.5 bg-blue-600 rounded-full opacity-0 transition-opacity"></div>
+                    </a>
+                    
+                    <a href="#architecture-design-section" class="nav-link group flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-indigo-50 group-hover:bg-indigo-100 rounded flex items-center justify-center transition-colors">
+                          <i class="fas fa-project-diagram text-xs text-indigo-600"></i>
+                        </div>
+                        <span class="text-xs">架构设计</span>
+                      </div>
+                      <div class="nav-indicator w-1.5 h-1.5 bg-indigo-600 rounded-full opacity-0 transition-opacity"></div>
+                    </a>
+                    
+                    <a href="#detailed-design-section" class="nav-link group flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-all duration-200">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-teal-50 group-hover:bg-teal-100 rounded flex items-center justify-center transition-colors">
+                          <i class="fas fa-code-branch text-xs text-teal-600"></i>
+                        </div>
+                        <span class="text-xs">详细设计</span>
+                      </div>
+                      <div class="nav-indicator w-1.5 h-1.5 bg-teal-600 rounded-full opacity-0 transition-opacity"></div>
+                    </a>
+                    
+                    <a href="#requirement-to-architecture-section" class="nav-link group flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-amber-50 group-hover:bg-amber-100 rounded flex items-center justify-center transition-colors">
+                          <i class="fas fa-link text-xs text-amber-600"></i>
+                        </div>
+                        <span class="text-xs">需求→架构追溯</span>
+                      </div>
+                      <div class="nav-indicator w-1.5 h-1.5 bg-amber-600 rounded-full opacity-0 transition-opacity"></div>
+                    </a>
+                    
+                    <a href="#requirement-to-design-section" class="nav-link group flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-all duration-200">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-pink-50 group-hover:bg-pink-100 rounded flex items-center justify-center transition-colors">
+                          <i class="fas fa-sitemap text-xs text-pink-600"></i>
+                        </div>
+                        <span class="text-xs">需求→设计追溯</span>
+                      </div>
+                      <div class="nav-indicator w-1.5 h-1.5 bg-pink-600 rounded-full opacity-0 transition-opacity"></div>
+                    </a>
+                  </div>
+                  
                   <a href="#models-section" class="nav-link group flex items-center justify-between px-3 py-3 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 border-l-3 border-transparent hover:border-blue-600">
                     <div class="flex items-center gap-3">
                       <div class="w-8 h-8 bg-gray-100 group-hover:bg-blue-100 rounded-lg flex items-center justify-center transition-colors">
@@ -813,7 +901,7 @@
                 
                 <!-- 快速操作区域 -->
                 <div class="mt-6 pt-4 border-t border-gray-200">
-                  <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">快速操作</h4>
+                  <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">代码生成</h4>
                   <div class="space-y-2">
                     <button onclick="RightNavigation.scrollToActionButtons()" class="action-nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
                       <div class="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center">
@@ -828,6 +916,74 @@
                         <i class="fas fa-magic text-xs"></i>
                       </div>
                       <span class="font-medium">专业生成</span>
+                      <i class="fas fa-external-link-alt text-xs ml-auto opacity-70"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- 文档审阅区域 -->
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                  <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">文档审阅</h4>
+                  <div class="space-y-2">
+                    <button onclick="RightNavigation.scrollToSectionEnhanced('detailed-requirement-section')" class="action-nav-btn w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg transition-all duration-200">
+                      <div class="w-6 h-6 bg-blue-50 rounded flex items-center justify-center">
+                        <i class="fas fa-list-alt text-xs text-blue-600"></i>
+                      </div>
+                      <span class="text-xs font-medium">需求描述</span>
+                      <i class="fas fa-arrow-right text-xs ml-auto opacity-50"></i>
+                    </button>
+                    
+                    <button onclick="RightNavigation.scrollToSectionEnhanced('architecture-design-section')" class="action-nav-btn w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 bg-white hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300 rounded-lg transition-all duration-200">
+                      <div class="w-6 h-6 bg-indigo-50 rounded flex items-center justify-center">
+                        <i class="fas fa-project-diagram text-xs text-indigo-600"></i>
+                      </div>
+                      <span class="text-xs font-medium">架构设计</span>
+                      <i class="fas fa-arrow-right text-xs ml-auto opacity-50"></i>
+                    </button>
+                    
+                    <button onclick="RightNavigation.scrollToSectionEnhanced('detailed-design-section')" class="action-nav-btn w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 bg-white hover:bg-teal-50 border border-gray-200 hover:border-teal-300 rounded-lg transition-all duration-200">
+                      <div class="w-6 h-6 bg-teal-50 rounded flex items-center justify-center">
+                        <i class="fas fa-code-branch text-xs text-teal-600"></i>
+                      </div>
+                      <span class="text-xs font-medium">详细设计</span>
+                      <i class="fas fa-arrow-right text-xs ml-auto opacity-50"></i>
+                    </button>
+                    
+                    <button onclick="RightNavigation.batchReview()" class="action-nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md mt-3">
+                      <div class="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-check-double text-xs"></i>
+                      </div>
+                      <span class="font-medium">批量评阅</span>
+                      <i class="fas fa-external-link-alt text-xs ml-auto opacity-70"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- UML工作流区域 -->
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                  <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">UML驱动生成</h4>
+                  <div class="space-y-2">
+                    <button onclick="DiagramSystem.validateConsistency()" class="action-nav-btn w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 bg-white hover:bg-amber-50 border border-gray-200 hover:border-amber-300 rounded-lg transition-all duration-200">
+                      <div class="w-6 h-6 bg-amber-50 rounded flex items-center justify-center">
+                        <i class="fas fa-check-double text-xs text-amber-600"></i>
+                      </div>
+                      <span class="text-xs font-medium">验证一致性</span>
+                      <i class="fas fa-arrow-right text-xs ml-auto opacity-50"></i>
+                    </button>
+                    
+                    <button onclick="DiagramSystem.generateCodeFromDiagram('detailedDesign')" class="action-nav-btn w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 bg-white hover:bg-teal-50 border border-gray-200 hover:border-teal-300 rounded-lg transition-all duration-200">
+                      <div class="w-6 h-6 bg-teal-50 rounded flex items-center justify-center">
+                        <i class="fas fa-code text-xs text-teal-600"></i>
+                      </div>
+                      <span class="text-xs font-medium">图表→代码</span>
+                      <i class="fas fa-arrow-right text-xs ml-auto opacity-50"></i>
+                    </button>
+                    
+                    <button onclick="DiagramSystem.generateFullWorkflow()" class="action-nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm text-white bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md mt-3">
+                      <div class="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-rocket text-xs"></i>
+                      </div>
+                      <span class="font-medium">完整工作流</span>
                       <i class="fas fa-external-link-alt text-xs ml-auto opacity-70"></i>
                     </button>
                   </div>
@@ -878,6 +1034,758 @@
             <div class="absolute bottom-3 right-3 text-xs text-gray-400">
               <span>支持自然语言描述</span>
             </div>
+          </div>
+        </div>
+
+        <!-- 详细需求描述 -->
+        <div id="detailed-requirement-section" class="surface-card rounded-xl p-8 animate-slide-up">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <i class="fas fa-list-alt text-blue-600"></i>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-semibold text-gray-900">详细需求描述</h3>
+              <p class="text-sm text-gray-500">问题详情：触发场景、错误表现、影响范围</p>
+            </div>
+            <div class="text-xs text-gray-400">
+              <i class="fas fa-database mr-1"></i>
+              <span id="detailedRequirementLogCount">0</span> 条记录
+            </div>
+          </div>
+          
+          <!-- 标签页切换 -->
+          <div class="flex gap-2 mb-4">
+            <button onclick="DiagramSystem.switchTab('detailedRequirement', 'text')" 
+                    class="diagram-tab active px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-blue-100 text-blue-700"
+                    data-module="detailedRequirement" data-tab="text">
+              <i class="fas fa-align-left mr-2"></i>文本描述
+            </button>
+            <button onclick="DiagramSystem.switchTab('detailedRequirement', 'diagram')" 
+                    class="diagram-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    data-module="detailedRequirement" data-tab="diagram">
+              <i class="fas fa-project-diagram mr-2"></i>用例图
+            </button>
+          </div>
+          
+          <!-- 文本输入区 -->
+          <div id="detailedRequirement-text-panel" class="diagram-panel active">
+            <div class="relative mb-4">
+              <textarea 
+                id="detailedRequirement" 
+                class="w-full h-40 form-input rounded-lg p-4 resize-y text-sm" 
+                placeholder="【问题详情记录】
+触发场景: 描述问题发生的具体场景和条件
+错误表现: 
+  - 错误日志: 完整的错误信息
+  - 功能影响: 对系统功能的影响
+影响范围: 受影响的模块和功能
+
+示例:
+触发场景: 调用get_user()函数时未初始化数据库连接
+错误表现:
+  - 错误日志: AttributeError: 'NoneType' object has no attribute 'query'
+  - 功能影响: 查询接口返回500错误
+影响范围: 用户中心、订单查询功能异常"
+              ></textarea>
+              <div class="absolute bottom-3 right-3 text-xs text-gray-400">
+                <span id="detailedRequirementCharCount">0</span> 字符
+              </div>
+            </div>
+          </div>
+          
+          <!-- UML图表区 -->
+          <div id="detailedRequirement-diagram-panel" class="diagram-panel hidden">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <!-- 编辑区 -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <i class="fas fa-edit mr-1"></i>Mermaid代码编辑
+                </label>
+                <textarea 
+                  id="detailedRequirement-diagram-code"
+                  class="w-full h-96 form-input rounded-lg p-4 resize-y text-sm font-mono bg-gray-900 text-green-400"
+                  placeholder="graph TD
+    A[用户] -->|登录| B(认证系统)
+    B --> C{验证成功?}
+    C -->|是| D[进入系统]
+    C -->|否| E[返回错误]"
+                ></textarea>
+              </div>
+              
+              <!-- 预览区 -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <label class="block text-sm font-medium text-gray-700">
+                    <i class="fas fa-eye mr-1"></i>图表预览
+                  </label>
+                  <button onclick="DiagramSystem.renderDiagram('detailedRequirement')" 
+                          class="text-xs px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    <i class="fas fa-sync mr-1"></i>刷新预览
+                  </button>
+                </div>
+                <div id="detailedRequirement-diagram-preview" 
+                     class="w-full h-96 border-2 border-gray-300 rounded-lg p-4 bg-white overflow-auto">
+                  <div class="text-gray-400 text-center mt-40">
+                    <i class="fas fa-image text-4xl mb-2"></i>
+                    <p class="text-sm">编辑代码后点击"刷新预览"查看图表</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 图表操作按钮 -->
+            <div class="flex gap-3 p-4 bg-gray-50 rounded-lg">
+              <button onclick="DiagramSystem.saveDiagramCode('detailedRequirement')" 
+                      class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm">
+                <i class="fas fa-save mr-2"></i>保存图表
+              </button>
+              <button onclick="DiagramSystem.loadDiagramCode('detailedRequirement')" 
+                      class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm">
+                <i class="fas fa-folder-open mr-2"></i>加载图表
+              </button>
+              <button onclick="DiagramSystem.exportDiagramAsImage('detailedRequirement')" 
+                      class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm">
+                <i class="fas fa-image mr-2"></i>导出图片
+              </button>
+            </div>
+          </div>
+          
+          <!-- 日志记录显示区域 -->
+          <div id="detailedRequirementLogs" class="mb-4 hidden">
+            <div class="bg-gray-50 rounded-lg p-4 max-h-60 overflow-y-auto">
+              <h4 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <i class="fas fa-history"></i>历史记录
+              </h4>
+              <div id="detailedRequirementLogsList" class="space-y-2">
+                <!-- 动态加载日志条目 -->
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex flex-wrap gap-3">
+            <button onclick="DiagramSystem.generateDiagram('detailedRequirement', 'usecase')" class="generate-diagram-btn px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-project-diagram mr-2"></i>生成用例图
+            </button>
+            <button onclick="ReviewSystem.llmReview('detailedRequirement')" class="llm-review-btn px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-robot mr-2"></i>LLMs评阅
+            </button>
+            <button onclick="ReviewSystem.expertReview('detailedRequirement')" class="expert-review-btn px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-user-tie mr-2"></i>专家评阅
+            </button>
+            <button onclick="ReviewSystem.downloadDoc('detailedRequirement')" class="download-doc-btn px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-download mr-2"></i>下载文档
+            </button>
+            <button onclick="ReviewSystem.uploadDoc('detailedRequirement')" class="upload-doc-btn px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-upload mr-2"></i>上传文档
+            </button>
+            <button onclick="ReviewSystem.saveLog('detailedRequirement')" class="save-log-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-save mr-2"></i>保存记录
+            </button>
+            <button onclick="ReviewSystem.viewLogs('detailedRequirement')" class="view-logs-btn px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-history mr-2"></i>查看日志
+            </button>
+          </div>
+        </div>
+
+        <!-- 架构设计 -->
+        <div id="architecture-design-section" class="surface-card rounded-xl p-8 animate-slide-up">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+              <i class="fas fa-project-diagram text-indigo-600"></i>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-semibold text-gray-900">架构设计</h3>
+              <p class="text-sm text-gray-500">架构层面的设计决策、模块划分、技术选型</p>
+            </div>
+            <div class="text-xs text-gray-400">
+              <i class="fas fa-database mr-1"></i>
+              <span id="architectureDesignLogCount">0</span> 条记录
+            </div>
+          </div>
+          
+          <!-- 标签页切换 -->
+          <div class="flex gap-2 mb-4">
+            <button onclick="DiagramSystem.switchTab('architectureDesign', 'text')" 
+                    class="diagram-tab active px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-indigo-100 text-indigo-700"
+                    data-module="architectureDesign" data-tab="text">
+              <i class="fas fa-align-left mr-2"></i>文本描述
+            </button>
+            <button onclick="DiagramSystem.switchTab('architectureDesign', 'diagram')" 
+                    class="diagram-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    data-module="architectureDesign" data-tab="diagram">
+              <i class="fas fa-cubes mr-2"></i>组件图
+            </button>
+          </div>
+          
+          <!-- 文本输入区 -->
+          <div id="architectureDesign-text-panel" class="diagram-panel active">
+            <div class="relative mb-4">
+              <textarea 
+                id="architectureDesign" 
+                class="w-full h-40 form-input rounded-lg p-4 resize-y text-sm" 
+                placeholder="【架构设计决策】
+技术栈选择: 编程语言、框架、数据库等
+架构模式: 分层架构、微服务、MVC等
+模块划分: 核心模块及其职责
+非功能需求: 性能、安全性、可扩展性考虑
+
+示例:
+技术栈: Python 3.9 + Django 4.2 + PostgreSQL
+架构模式: 三层架构（表示层、业务层、数据访问层）
+核心模块:
+  - 用户认证模块: 处理登录、注册、权限管理
+  - 数据查询模块: 封装数据库访问逻辑
+  - API接口层: RESTful API设计
+性能要求: 支持1000并发用户，响应时间<200ms"
+              ></textarea>
+              <div class="absolute bottom-3 right-3 text-xs text-gray-400">
+                <span id="architectureDesignCharCount">0</span> 字符
+              </div>
+            </div>
+          </div>
+          
+          <!-- UML图表区 -->
+          <div id="architectureDesign-diagram-panel" class="diagram-panel hidden">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <!-- 编辑区 -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <i class="fas fa-edit mr-1"></i>Mermaid代码编辑
+                </label>
+                <textarea 
+                  id="architectureDesign-diagram-code"
+                  class="w-full h-96 form-input rounded-lg p-4 resize-y text-sm font-mono bg-gray-900 text-green-400"
+                  placeholder="graph TB
+    subgraph &quot;前端层&quot;
+        UI[用户界面]
+    end
+    subgraph &quot;业务层&quot;
+        Service[业务服务]
+    end
+    subgraph &quot;数据层&quot;
+        DB[(数据库)]
+    end
+    UI --> Service --> DB"
+                ></textarea>
+              </div>
+              
+              <!-- 预览区 -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <label class="block text-sm font-medium text-gray-700">
+                    <i class="fas fa-eye mr-1"></i>图表预览
+                  </label>
+                  <button onclick="DiagramSystem.renderDiagram('architectureDesign')" 
+                          class="text-xs px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                    <i class="fas fa-sync mr-1"></i>刷新预览
+                  </button>
+                </div>
+                <div id="architectureDesign-diagram-preview" 
+                     class="w-full h-96 border-2 border-gray-300 rounded-lg p-4 bg-white overflow-auto">
+                  <div class="text-gray-400 text-center mt-40">
+                    <i class="fas fa-image text-4xl mb-2"></i>
+                    <p class="text-sm">编辑代码后点击"刷新预览"查看图表</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 图表操作按钮 -->
+            <div class="flex gap-3 p-4 bg-gray-50 rounded-lg">
+              <button onclick="DiagramSystem.saveDiagramCode('architectureDesign')" 
+                      class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm">
+                <i class="fas fa-save mr-2"></i>保存图表
+              </button>
+              <button onclick="DiagramSystem.loadDiagramCode('architectureDesign')" 
+                      class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm">
+                <i class="fas fa-folder-open mr-2"></i>加载图表
+              </button>
+              <button onclick="DiagramSystem.exportDiagramAsImage('architectureDesign')" 
+                      class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm">
+                <i class="fas fa-image mr-2"></i>导出图片
+              </button>
+            </div>
+          </div>
+          
+          <div class="flex flex-wrap gap-3">
+            <button onclick="DiagramSystem.generateDiagram('architectureDesign', 'component')" class="generate-diagram-btn px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-cubes mr-2"></i>生成组件图
+            </button>
+            <button onclick="ReviewSystem.llmReview('architectureDesign')" class="llm-review-btn px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-robot mr-2"></i>LLMs评阅
+            </button>
+            <button onclick="ReviewSystem.expertReview('architectureDesign')" class="expert-review-btn px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-user-tie mr-2"></i>专家评阅
+            </button>
+            <button onclick="ReviewSystem.downloadDoc('architectureDesign')" class="download-doc-btn px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-download mr-2"></i>下载文档
+            </button>
+            <button onclick="ReviewSystem.uploadDoc('architectureDesign')" class="upload-doc-btn px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-upload mr-2"></i>上传文档
+            </button>
+            <button onclick="ReviewSystem.saveLog('architectureDesign')" class="save-log-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-save mr-2"></i>保存记录
+            </button>
+            <button onclick="ReviewSystem.viewLogs('architectureDesign')" class="view-logs-btn px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-history mr-2"></i>查看日志
+            </button>
+          </div>
+        </div>
+
+        <!-- 详细设计 -->
+        <div id="detailed-design-section" class="surface-card rounded-xl p-8 animate-slide-up">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+              <i class="fas fa-code-branch text-teal-600"></i>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-semibold text-gray-900">详细设计</h3>
+              <p class="text-sm text-gray-500">解决方案：代码对比、关键步骤、实现细节</p>
+            </div>
+            <div class="text-xs text-gray-400">
+              <i class="fas fa-database mr-1"></i>
+              <span id="detailedDesignLogCount">0</span> 条记录
+            </div>
+          </div>
+          
+          <!-- 标签页切换 -->
+          <div class="flex gap-2 mb-4">
+            <button onclick="DiagramSystem.switchTab('detailedDesign', 'text')" 
+                    class="diagram-tab active px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-teal-100 text-teal-700"
+                    data-module="detailedDesign" data-tab="text">
+              <i class="fas fa-align-left mr-2"></i>文本描述
+            </button>
+            <button onclick="DiagramSystem.switchTab('detailedDesign', 'diagram')" 
+                    class="diagram-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    data-module="detailedDesign" data-tab="diagram">
+              <i class="fas fa-sitemap mr-2"></i>类图
+            </button>
+          </div>
+          
+          <!-- 文本输入区 -->
+          <div id="detailedDesign-text-panel" class="diagram-panel active">
+            <div class="relative mb-4">
+              <textarea 
+                id="detailedDesign" 
+                class="w-full h-48 form-input rounded-lg p-4 resize-y text-sm font-mono" 
+                placeholder="【解决方案与代码实现】
+错误原因分析: 问题产生的根本原因
+解决思路: 整体的解决策略和方法
+
+代码对比:
+修正前代码:
+def get_user(user_id):
+    result = db.query(User).filter_by(id=user_id).first()
+
+修正后代码:
+def get_user(user_id):
+    db = connect_db()
+    if db is None: 
+        raise Exception('连接失败')
+    return db.query(User).filter_by(id=user_id).first()
+
+关键步骤:
+1. 初始化数据库连接
+2. 添加非空校验
+3. 异常处理机制"
+              ></textarea>
+              <div class="absolute bottom-3 right-3 text-xs text-gray-400">
+                <span id="detailedDesignCharCount">0</span> 字符
+              </div>
+            </div>
+          </div>
+          
+          <!-- UML图表区 -->
+          <div id="detailedDesign-diagram-panel" class="diagram-panel hidden">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <!-- 编辑区 -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <i class="fas fa-edit mr-1"></i>Mermaid代码编辑
+                </label>
+                <textarea 
+                  id="detailedDesign-diagram-code"
+                  class="w-full h-96 form-input rounded-lg p-4 resize-y text-sm font-mono bg-gray-900 text-green-400"
+                  placeholder="classDiagram
+    class User {
+        +String username
+        +String email
+        +login()
+        +logout()
+    }
+    class Database {
+        +query()
+        +execute()
+    }
+    User --> Database"
+                ></textarea>
+              </div>
+              
+              <!-- 预览区 -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <label class="block text-sm font-medium text-gray-700">
+                    <i class="fas fa-eye mr-1"></i>图表预览
+                  </label>
+                  <button onclick="DiagramSystem.renderDiagram('detailedDesign')" 
+                          class="text-xs px-3 py-1 bg-teal-600 text-white rounded hover:bg-teal-700">
+                    <i class="fas fa-sync mr-1"></i>刷新预览
+                  </button>
+                </div>
+                <div id="detailedDesign-diagram-preview" 
+                     class="w-full h-96 border-2 border-gray-300 rounded-lg p-4 bg-white overflow-auto">
+                  <div class="text-gray-400 text-center mt-40">
+                    <i class="fas fa-image text-4xl mb-2"></i>
+                    <p class="text-sm">编辑代码后点击"刷新预览"查看图表</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 图表操作按钮 -->
+            <div class="flex gap-3 p-4 bg-gradient-to-r from-teal-50 to-blue-50 rounded-lg border-2 border-teal-200">
+              <button onclick="DiagramSystem.saveDiagramCode('detailedDesign')" 
+                      class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-sm">
+                <i class="fas fa-save mr-2"></i>保存图表
+              </button>
+              <button onclick="DiagramSystem.loadDiagramCode('detailedDesign')" 
+                      class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm">
+                <i class="fas fa-folder-open mr-2"></i>加载图表
+              </button>
+              <button onclick="DiagramSystem.generateCodeFromDiagram('detailedDesign')" 
+                      class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold">
+                <i class="fas fa-code mr-2"></i>基于图表生成代码
+              </button>
+              <button onclick="DiagramSystem.exportDiagramAsImage('detailedDesign')" 
+                      class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm">
+                <i class="fas fa-image mr-2"></i>导出图片
+              </button>
+            </div>
+          </div>
+          
+          <div class="flex flex-wrap gap-3">
+            <button onclick="DiagramSystem.generateDiagram('detailedDesign', 'class')" class="generate-diagram-btn px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-sitemap mr-2"></i>生成类图
+            </button>
+            <button onclick="ReviewSystem.llmReview('detailedDesign')" class="llm-review-btn px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-robot mr-2"></i>LLMs评阅
+            </button>
+            <button onclick="ReviewSystem.expertReview('detailedDesign')" class="expert-review-btn px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-user-tie mr-2"></i>专家评阅
+            </button>
+            <button onclick="ReviewSystem.downloadDoc('detailedDesign')" class="download-doc-btn px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-download mr-2"></i>下载文档
+            </button>
+            <button onclick="ReviewSystem.uploadDoc('detailedDesign')" class="upload-doc-btn px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-upload mr-2"></i>上传文档
+            </button>
+            <button onclick="ReviewSystem.saveLog('detailedDesign')" class="save-log-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-save mr-2"></i>保存记录
+            </button>
+            <button onclick="ReviewSystem.viewLogs('detailedDesign')" class="view-logs-btn px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-history mr-2"></i>查看日志
+            </button>
+          </div>
+        </div>
+
+        <!-- 需求到架构的追溯 -->
+        <div id="requirement-to-architecture-section" class="surface-card rounded-xl p-8 animate-slide-up">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+              <i class="fas fa-link text-amber-600"></i>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-semibold text-gray-900">需求到架构的追溯</h3>
+              <p class="text-sm text-gray-500">问题详情如何映射到架构设计决策</p>
+            </div>
+            <div class="text-xs text-gray-400">
+              <i class="fas fa-database mr-1"></i>
+              <span id="requirementToArchitectureLogCount">0</span> 条记录
+            </div>
+          </div>
+          
+          <!-- 标签页切换 -->
+          <div class="flex gap-2 mb-4">
+            <button onclick="DiagramSystem.switchTab('requirementToArchitecture', 'text')" 
+                    class="diagram-tab active px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-amber-100 text-amber-700"
+                    data-module="requirementToArchitecture" data-tab="text">
+              <i class="fas fa-align-left mr-2"></i>文本描述
+            </button>
+            <button onclick="DiagramSystem.switchTab('requirementToArchitecture', 'diagram')" 
+                    class="diagram-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    data-module="requirementToArchitecture" data-tab="diagram">
+              <i class="fas fa-stream mr-2"></i>流程图
+            </button>
+          </div>
+          
+          <!-- 文本输入区 -->
+          <div id="requirementToArchitecture-text-panel" class="diagram-panel active">
+            <div class="relative mb-4">
+              <textarea 
+                id="requirementToArchitecture" 
+                class="w-full h-40 form-input rounded-lg p-4 resize-y text-sm" 
+                placeholder="【问题到架构的追溯关系】
+记录问题详情如何驱动架构设计决策
+
+追溯映射:
+问题: [db-err-001] 数据库连接未初始化导致查询失败
+  ↓
+架构决策: 
+  - 采用连接池管理数据库连接
+  - 实现依赖注入模式，统一管理DB实例
+  - 添加健康检查机制
+
+问题: [auth-vul-001] 密码明文存储的安全风险
+  ↓
+架构决策:
+  - 引入安全层，统一处理加密解密
+  - 采用bcrypt库进行密码哈希
+  - 实现密码策略管理模块
+
+影响的架构组件:
+  - 数据访问层
+  - 安全认证模块
+  - 配置管理中心"
+              ></textarea>
+              <div class="absolute bottom-3 right-3 text-xs text-gray-400">
+                <span id="requirementToArchitectureCharCount">0</span> 字符
+              </div>
+            </div>
+          </div>
+          
+          <!-- UML图表区 -->
+          <div id="requirementToArchitecture-diagram-panel" class="diagram-panel hidden">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <!-- 编辑区 -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <i class="fas fa-edit mr-1"></i>Mermaid代码编辑
+                </label>
+                <textarea 
+                  id="requirementToArchitecture-diagram-code"
+                  class="w-full h-96 form-input rounded-lg p-4 resize-y text-sm font-mono bg-gray-900 text-green-400"
+                  placeholder="graph LR
+    A[需求分析] --> B[架构设计]
+    B --> C{决策点}
+    C -->|方案1| D[实现方案A]
+    C -->|方案2| E[实现方案B]"
+                ></textarea>
+              </div>
+              
+              <!-- 预览区 -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <label class="block text-sm font-medium text-gray-700">
+                    <i class="fas fa-eye mr-1"></i>图表预览
+                  </label>
+                  <button onclick="DiagramSystem.renderDiagram('requirementToArchitecture')" 
+                          class="text-xs px-3 py-1 bg-amber-600 text-white rounded hover:bg-amber-700">
+                    <i class="fas fa-sync mr-1"></i>刷新预览
+                  </button>
+                </div>
+                <div id="requirementToArchitecture-diagram-preview" 
+                     class="w-full h-96 border-2 border-gray-300 rounded-lg p-4 bg-white overflow-auto">
+                  <div class="text-gray-400 text-center mt-40">
+                    <i class="fas fa-image text-4xl mb-2"></i>
+                    <p class="text-sm">编辑代码后点击"刷新预览"查看图表</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 图表操作按钮 -->
+            <div class="flex gap-3 p-4 bg-gray-50 rounded-lg">
+              <button onclick="DiagramSystem.saveDiagramCode('requirementToArchitecture')" 
+                      class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm">
+                <i class="fas fa-save mr-2"></i>保存图表
+              </button>
+              <button onclick="DiagramSystem.loadDiagramCode('requirementToArchitecture')" 
+                      class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm">
+                <i class="fas fa-folder-open mr-2"></i>加载图表
+              </button>
+              <button onclick="DiagramSystem.exportDiagramAsImage('requirementToArchitecture')" 
+                      class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm">
+                <i class="fas fa-image mr-2"></i>导出图片
+              </button>
+            </div>
+          </div>
+          
+          <div class="flex flex-wrap gap-3">
+            <button onclick="DiagramSystem.generateDiagram('requirementToArchitecture', 'flowchart')" class="generate-diagram-btn px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-stream mr-2"></i>生成流程图
+            </button>
+            <button onclick="ReviewSystem.llmReview('requirementToArchitecture')" class="llm-review-btn px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-robot mr-2"></i>LLMs评阅
+            </button>
+            <button onclick="ReviewSystem.expertReview('requirementToArchitecture')" class="expert-review-btn px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-user-tie mr-2"></i>专家评阅
+            </button>
+            <button onclick="ReviewSystem.downloadDoc('requirementToArchitecture')" class="download-doc-btn px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-download mr-2"></i>下载文档
+            </button>
+            <button onclick="ReviewSystem.uploadDoc('requirementToArchitecture')" class="upload-doc-btn px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-upload mr-2"></i>上传文档
+            </button>
+            <button onclick="ReviewSystem.saveLog('requirementToArchitecture')" class="save-log-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-save mr-2"></i>保存记录
+            </button>
+            <button onclick="ReviewSystem.viewLogs('requirementToArchitecture')" class="view-logs-btn px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-history mr-2"></i>查看日志
+            </button>
+          </div>
+        </div>
+
+        <!-- 需求到详细设计的追溯 -->
+        <div id="requirement-to-design-section" class="surface-card rounded-xl p-8 animate-slide-up">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+              <i class="fas fa-sitemap text-pink-600"></i>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-semibold text-gray-900">需求到详细设计的追溯</h3>
+              <p class="text-sm text-gray-500">问题详情如何映射到具体代码实现</p>
+            </div>
+            <div class="text-xs text-gray-400">
+              <i class="fas fa-database mr-1"></i>
+              <span id="requirementToDesignLogCount">0</span> 条记录
+            </div>
+          </div>
+          
+          <!-- 标签页切换 -->
+          <div class="flex gap-2 mb-4">
+            <button onclick="DiagramSystem.switchTab('requirementToDesign', 'text')" 
+                    class="diagram-tab active px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-pink-100 text-pink-700"
+                    data-module="requirementToDesign" data-tab="text">
+              <i class="fas fa-align-left mr-2"></i>文本描述
+            </button>
+            <button onclick="DiagramSystem.switchTab('requirementToDesign', 'diagram')" 
+                    class="diagram-tab px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    data-module="requirementToDesign" data-tab="diagram">
+              <i class="fas fa-exchange-alt mr-2"></i>序列图
+            </button>
+          </div>
+          
+          <!-- 文本输入区 -->
+          <div id="requirementToDesign-text-panel" class="diagram-panel active">
+            <div class="relative mb-4">
+              <textarea 
+                id="requirementToDesign" 
+                class="w-full h-40 form-input rounded-lg p-4 resize-y text-sm font-mono" 
+                placeholder="【问题到代码实现的追溯关系】
+记录问题如何映射到具体的代码修改和实现
+
+追溯映射:
+问题: [db-err-001] AttributeError: 'NoneType' object has no attribute 'query'
+  ↓
+代码实现:
+  函数: get_user(user_id: int) -> User
+  修改点:
+    1. 添加连接初始化: db = connect_db()
+    2. 添加空值检查: if db is None: raise Exception()
+    3. 返回值处理: return db.query(...).first()
+
+问题: [auth-vul-001] 密码明文存储
+  ↓  
+代码实现:
+  函数: register(username: str, password: str) -> bool
+  修改点:
+    1. 导入: import bcrypt
+    2. 密码哈希: hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    3. 存储哈希值: db.insert({'password': hashed.decode()})
+
+测试验证:
+  - 单元测试: test_get_user_with_invalid_db()
+  - 集成测试: test_user_registration_password_hashed()"
+              ></textarea>
+              <div class="absolute bottom-3 right-3 text-xs text-gray-400">
+                <span id="requirementToDesignCharCount">0</span> 字符
+              </div>
+            </div>
+          </div>
+          
+          <!-- UML图表区 -->
+          <div id="requirementToDesign-diagram-panel" class="diagram-panel hidden">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <!-- 编辑区 -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <i class="fas fa-edit mr-1"></i>Mermaid代码编辑
+                </label>
+                <textarea 
+                  id="requirementToDesign-diagram-code"
+                  class="w-full h-96 form-input rounded-lg p-4 resize-y text-sm font-mono bg-gray-900 text-green-400"
+                  placeholder="sequenceDiagram
+    participant User
+    participant Service
+    participant DB
+    
+    User->>Service: 请求数据
+    Service->>DB: 查询
+    DB-->>Service: 返回结果
+    Service-->>User: 响应"
+                ></textarea>
+              </div>
+              
+              <!-- 预览区 -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <label class="block text-sm font-medium text-gray-700">
+                    <i class="fas fa-eye mr-1"></i>图表预览
+                  </label>
+                  <button onclick="DiagramSystem.renderDiagram('requirementToDesign')" 
+                          class="text-xs px-3 py-1 bg-pink-600 text-white rounded hover:bg-pink-700">
+                    <i class="fas fa-sync mr-1"></i>刷新预览
+                  </button>
+                </div>
+                <div id="requirementToDesign-diagram-preview" 
+                     class="w-full h-96 border-2 border-gray-300 rounded-lg p-4 bg-white overflow-auto">
+                  <div class="text-gray-400 text-center mt-40">
+                    <i class="fas fa-image text-4xl mb-2"></i>
+                    <p class="text-sm">编辑代码后点击"刷新预览"查看图表</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 图表操作按钮 -->
+            <div class="flex gap-3 p-4 bg-gray-50 rounded-lg">
+              <button onclick="DiagramSystem.saveDiagramCode('requirementToDesign')" 
+                      class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg text-sm">
+                <i class="fas fa-save mr-2"></i>保存图表
+              </button>
+              <button onclick="DiagramSystem.loadDiagramCode('requirementToDesign')" 
+                      class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm">
+                <i class="fas fa-folder-open mr-2"></i>加载图表
+              </button>
+              <button onclick="DiagramSystem.exportDiagramAsImage('requirementToDesign')" 
+                      class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm">
+                <i class="fas fa-image mr-2"></i>导出图片
+              </button>
+            </div>
+          </div>
+          
+          <div class="flex flex-wrap gap-3">
+            <button onclick="DiagramSystem.generateDiagram('requirementToDesign', 'sequence')" class="generate-diagram-btn px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-exchange-alt mr-2"></i>生成序列图
+            </button>
+            <button onclick="ReviewSystem.llmReview('requirementToDesign')" class="llm-review-btn px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-robot mr-2"></i>LLMs评阅
+            </button>
+            <button onclick="ReviewSystem.expertReview('requirementToDesign')" class="expert-review-btn px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-user-tie mr-2"></i>专家评阅
+            </button>
+            <button onclick="ReviewSystem.downloadDoc('requirementToDesign')" class="download-doc-btn px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-download mr-2"></i>下载文档
+            </button>
+            <button onclick="ReviewSystem.uploadDoc('requirementToDesign')" class="upload-doc-btn px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-upload mr-2"></i>上传文档
+            </button>
+            <button onclick="ReviewSystem.saveLog('requirementToDesign')" class="save-log-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-save mr-2"></i>保存记录
+            </button>
+            <button onclick="ReviewSystem.viewLogs('requirementToDesign')" class="view-logs-btn px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm">
+              <i class="fas fa-history mr-2"></i>查看日志
+            </button>
           </div>
         </div>
 
@@ -1965,13 +2873,13 @@
           <div class="w-6 h-6 bg-gray-900 rounded flex items-center justify-center">
             <i class="fas fa-code text-white text-xs"></i>
           </div>
-          <span class="font-semibold text-gray-900">CodeForge</span>
+          <span class="font-semibold text-gray-900">Professional Code Development Platform</span>
         </div>
         <p class="text-sm text-gray-500 mb-4">
           专业的代码开发与质量保障平台
         </p>
         <div class="flex items-center justify-center gap-8 text-xs text-gray-400">
-          <span>© 2024 CodeForge</span>
+          <span>© 2024</span>
           <span>•</span>
           <span>企业级代码生成解决方案</span>
           <span>•</span>
@@ -1981,6 +2889,8 @@
     </div>
   </footer>
 
+  <script src="../static/js/diagram_system.js"></script>
+  <script src="../static/js/review_system.js"></script>
   <script src="../static/js/main.js"></script>
 </body>
 </html>

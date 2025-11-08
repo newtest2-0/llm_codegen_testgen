@@ -198,11 +198,11 @@ class IntelligentTestGenerator:
             # 验证和修复测试代码
             tests_code = self._validate_and_fix_tests(tests_code, analysis)
             
-            logger.info(f"✅ 智能测试用例生成完成")
+            logger.info("[OK] 智能测试用例生成完成")
             return tests_code
             
         except Exception as e:
-            logger.error(f"❌ 智能测试生成失败: {e}")
+            logger.error(f"[ERROR] 智能测试生成失败: {e}")
             return self._generate_basic_test(requirement)
     
     def _build_role_based_test_prompt(self, code: str, analysis: Dict[str, Any], 

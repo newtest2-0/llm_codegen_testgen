@@ -51,12 +51,12 @@ async def analyze_code(request: AnalyzeCodeRequest, req: Request):
         # 分析代码
         analysis = test_generator.analyzer.analyze_code(request.code)
         
-        logger.info("✅ 代码分析完成")
+        logger.info("[OK] 代码分析完成")
         
         return AnalyzeCodeResponse(analysis=analysis)
         
     except Exception as e:
-        logger.error(f"❌ 代码分析失败: {e}")
+        logger.error(f"[ERROR] 代码分析失败: {e}")
         raise HTTPException(status_code=500, detail=f"代码分析失败: {str(e)}")
 
 @router.post("/generate-test", response_model=GenerateTestResponse)
@@ -121,7 +121,7 @@ async def generate_test_for_code(request: GenerateTestRequest, req: Request):
             )
             strategy_used = request.test_strategy
         
-        logger.info(f"✅ 测试生成完成，策略: {strategy_used}")
+        logger.info(f"[OK] 测试生成完成，策略: {strategy_used}")
         
         return GenerateTestResponse(
             tests_code=tests_code,
@@ -130,7 +130,7 @@ async def generate_test_for_code(request: GenerateTestRequest, req: Request):
         )
         
     except Exception as e:
-        logger.error(f"❌ 测试生成失败: {e}")
+        logger.error(f"[ERROR] 测试生成失败: {e}")
         raise HTTPException(status_code=500, detail=f"测试生成失败: {str(e)}")
 
 @router.get("/test-strategies")
@@ -216,5 +216,5 @@ async def demo_intelligent_testing(req: Request):
         }
         
     except Exception as e:
-        logger.error(f"❌ 演示失败: {e}")
+        logger.error(f"[ERROR] 演示失败: {e}")
         raise HTTPException(status_code=500, detail=f"演示失败: {str(e)}")

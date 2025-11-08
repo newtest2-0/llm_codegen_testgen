@@ -27,19 +27,19 @@ async def lifespan(app: FastAPI):
     global provider_manager
     
     # 启动时初始化
-    logger.info("🚀 启动LLM代码生成平台...")
+    logger.info("[Start] 启动LLM代码生成平台...")
     
     # 初始化提供者管理器
     provider_manager = ProviderManager(config._config)
     app.state.provider_manager = provider_manager
     
-    logger.info(f"✅ 已加载 {len(provider_manager)} 个AI提供者")
-    logger.info(f"📋 可用提供者: {', '.join(provider_manager.get_provider_names())}")
+    logger.info(f"[OK] 已加载 {len(provider_manager)} 个AI提供者")
+    logger.info(f"[Info] 可用提供者: {', '.join(provider_manager.get_provider_names())}")
     
     yield
     
     # 关闭时清理
-    logger.info("👋 关闭LLM代码生成平台...")
+    logger.info("[Stop] 关闭LLM代码生成平台...")
 
 def create_app() -> FastAPI:
     """
@@ -53,10 +53,10 @@ def create_app() -> FastAPI:
     try:
         from core.evaluators.enhanced import EnhancedCodeEvaluator
         enhanced_enabled = True
-        logger.info("✅ 增强版代码评测系统已加载")
+        logger.info("[OK] 增强版代码评测系统已加载")
     except ImportError as e:
-        logger.warning(f"⚠️  增强版代码评测系统不可用: {e}")
-        logger.info("   运行 'python scripts/install_enhanced.py' 安装依赖")
+        logger.warning(f"[WARN] 增强版代码评测系统不可用: {e}")
+        logger.info("[Info] 运行 'python scripts/install_enhanced.py' 安装依赖")
     
     # 更新配置
     config.set("enhanced_evaluation.enabled", enhanced_enabled)

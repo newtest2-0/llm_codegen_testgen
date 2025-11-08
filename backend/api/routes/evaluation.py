@@ -90,7 +90,7 @@ async def evaluate_code(request: EvaluateRequest, req: Request):
                 metrics=eval_metrics
             ))
             
-            logger.info(f"✅ {artifact.provider} 评估完成，综合得分: {quality_metrics.overall_score:.3f}")
+            logger.info(f"[OK] {artifact.provider} 评估完成，综合得分: {quality_metrics.overall_score:.3f}")
         
         # 选择最佳方案
         best = max(results, key=lambda r: r.metrics.aggregate_score)
@@ -105,7 +105,7 @@ async def evaluate_code(request: EvaluateRequest, req: Request):
         )
         
     except Exception as e:
-        logger.error(f"❌ 代码评估失败: {e}")
+        logger.error(f"[ERROR] 代码评估失败: {e}")
         raise HTTPException(status_code=500, detail=f"代码评估失败: {str(e)}")
 
 @router.post("/quick-evaluate", response_model=QuickEvaluateResponse)
@@ -154,7 +154,7 @@ async def quick_evaluate(request: QuickEvaluateRequest):
             }
         }
         
-        logger.info(f"✅ 快速评估完成，综合得分: {metrics.overall_score:.3f}")
+        logger.info(f"[OK] 快速评估完成，综合得分: {metrics.overall_score:.3f}")
         
         return QuickEvaluateResponse(
             metrics=metrics_dict,
@@ -163,7 +163,7 @@ async def quick_evaluate(request: QuickEvaluateRequest):
         )
         
     except Exception as e:
-        logger.error(f"❌ 快速评估失败: {e}")
+        logger.error(f"[ERROR] 快速评估失败: {e}")
         raise HTTPException(status_code=500, detail=f"快速评估失败: {str(e)}")
 
 @router.get("/quality-standards")

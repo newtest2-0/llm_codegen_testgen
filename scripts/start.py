@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 项目启动脚本
 """
@@ -9,6 +10,13 @@ import signal
 import time
 from pathlib import Path
 from threading import Thread
+import platform
+import io
+
+# 设置Windows控制台UTF-8编码
+if platform.system().lower() == 'windows':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 def get_project_root():
     """获取项目根目录"""
@@ -19,7 +27,7 @@ def start_backend():
     project_root = get_project_root()
     os.chdir(project_root)
     
-    print("🚀 启动后端服务...")
+    print("[Backend] 启动后端服务...")
     
     # 检查虚拟环境
     if sys.platform == "win32":
@@ -47,7 +55,7 @@ def start_frontend():
     if not frontend_script.exists():
         create_frontend_server()
     
-    print("🌐 启动前端服务...")
+    print("[Frontend] 启动前端服务...")
     
     # 检查虚拟环境
     if sys.platform == "win32":
@@ -69,13 +77,25 @@ def create_frontend_server():
     server_script = project_root / "web" / "start_server.py"
     
     content = '''#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 前端静态文件服务器
 """
 import http.server
 import socketserver
 import os
+import sys
+import platform
+import io
 from pathlib import Path
+
+# 设置Windows控制台UTF-8编码
+if platform.system().lower() == 'windows':
+    try:
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+    except:
+        pass
 
 def main():
     """启动前端服务器"""
@@ -101,13 +121,22 @@ def main():
             
             return super().do_GET()
     
+    print("=" * 70)
+    print("  [Frontend] Professional Code Development Platform")
+    print("  Frontend Static File Server")
+    print("=" * 70)
+    print()
+    print(f"[OK] 前端服务已启动: http://localhost:{PORT}")
+    print(f"[Info] 静态文件目录: {web_dir}")
+    print(f"[Info] 按 Ctrl+C 停止服务")
+    print("=" * 70)
+    print()
+    
     with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
-        print(f"✅ 前端服务已启动: http://localhost:{PORT}")
-        print("按 Ctrl+C 停止服务")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print("\\n👋 前端服务已停止")
+            print("\\n[Info] 前端服务已停止")
 
 if __name__ == "__main__":
     main()
@@ -118,14 +147,15 @@ if __name__ == "__main__":
 def main():
     """主函数"""
     print("=" * 60)
-    print("🎯 LLM 代码生成平台启动器")
+    print("Professional Code Development Platform")
+    print("LLM 代码生成平台启动器")
     print("=" * 60)
     
     # 检查项目结构
     project_root = get_project_root()
     if not (project_root / "backend").exists():
-        print("❌ 错误：未找到后端目录")
-        print("请确保项目结构正确")
+        print("[ERROR] 未找到后端目录")
+        print("[INFO] 请确保项目结构正确")
         sys.exit(1)
     
     # 启动服务
@@ -142,19 +172,19 @@ def main():
         time.sleep(2)  # 等待前端启动
         
         print("=" * 60)
-        print("🎉 服务启动完成！")
-        print("📱 前端界面: http://localhost:8080")
-        print("🔧 后端API: http://localhost:8000")
-        print("📚 API文档: http://localhost:8000/docs")
+        print("[SUCCESS] 服务启动完成！")
+        print("[Frontend] 前端界面: http://localhost:8080")
+        print("[Backend]  后端API: http://localhost:8000")
+        print("[Docs]     API文档: http://localhost:8000/docs")
         print("=" * 60)
-        print("按 Ctrl+C 停止所有服务")
+        print("[INFO] 按 Ctrl+C 停止所有服务")
         
         # 等待用户中断
         try:
             while True:
                 time.sleep(1)
         except KeyboardInterrupt:
-            print("\\n🛑 正在停止服务...")
+            print("\n[INFO] 正在停止服务...")
             
     finally:
         # 清理进程
@@ -172,7 +202,7 @@ def main():
             except subprocess.TimeoutExpired:
                 frontend_process.kill()
         
-        print("👋 所有服务已停止")
+        print("[INFO] 所有服务已停止")
 
 if __name__ == "__main__":
     main()
