@@ -2862,7 +2862,15 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('开始执行健康检查...');
     getHealth();
   }, 500);
-  
+
+  // 初始化需求管理模块（复用系统LLM配置）
+  if (typeof RequirementsManager !== 'undefined') {
+    RequirementsManager.init();
+    console.log('✅ Professional需求管理模块已初始化');
+  } else {
+    console.warn('⚠️ RequirementsManager未加载');
+  }
+
   // 生成按钮事件
   const runBtn = document.getElementById('runBtn');
   if (runBtn) {

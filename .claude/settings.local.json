@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m py_compile:*)",
+      "Bash(python test_routes.py:*)",
+      "Bash(test:*)",
+      "Bash(python verify_changes.py:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
