@@ -53,6 +53,12 @@
       "model": "llama3.1:8b",
       "base_url_env": "OLLAMA_BASE_URL",
       "api_key_env": "OLLAMA_API_KEY"
+    },
+    {
+      "name": "codellama",
+      "kind": "ollama",
+      "model": "codellama:7b-code",
+      "base_url": "http://localhost:11434"
     }
   ],
   "scoring": {

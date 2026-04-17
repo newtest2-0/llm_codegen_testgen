@@ -2,14 +2,20 @@
 主应用程序入口
 """
 import logging
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from core.config import config
 from core.providers import ProviderManager
 from api.routes import router
 from api.middleware import setup_middleware
+
+# 图片上传目录（相对于 backend/）
+UPLOADS_DIR = os.path.join(os.path.dirname(__file__), "uploads")
+os.makedirs(UPLOADS_DIR, exist_ok=True)
 
 # 配置日志
 logging.basicConfig(
@@ -74,7 +80,10 @@ def create_app() -> FastAPI:
     
     # 注册路由
     app.include_router(router, prefix="/api/v1")
-    
+
+    # 挂载图片静态文件目录（供前端直接访问上传的图片）
+    app.mount("/uploads", StaticFiles(directory=UPLOADS_DIR), name="uploads")
+
     # 健康检查端点（保持向后兼容）
     @app.get("/health")
     async def health_check():
