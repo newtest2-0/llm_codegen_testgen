@@ -32,7 +32,7 @@ class AnthropicProvider(ProviderBase):
         async def _make_request():
             url = "https://api.anthropic.com/v1/messages"
             headers = {
-                "Authorization": f"Bearer {api_key}",
+                "x-api-key": api_key,
                 "Content-Type": "application/json",
                 "anthropic-version": "2023-06-01"
             }
