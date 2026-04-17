@@ -6,23 +6,24 @@ import httpx
 import logging
 from typing import Dict, Any
 from .base import ProviderBase
+from ..api_key_storage import api_key_storage
 
 logger = logging.getLogger(__name__)
 
 class AnthropicProvider(ProviderBase):
     """Anthropic Claude提供者"""
-    
+
     async def generate(self, prompt: str) -> str:
         """
         使用Anthropic API生成代码
-        
+
         Args:
             prompt: 提示词
-            
+
         Returns:
             生成的代码
         """
-        api_key = os.environ.get(self.api_key_env, "")
+        api_key = api_key_storage.get_api_key(self.name) or os.environ.get(self.api_key_env, "")
         
         if not api_key:
             logger.info(f"{self.name}: 未配置API密钥，使用虚拟代码")
