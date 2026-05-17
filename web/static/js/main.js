@@ -935,26 +935,53 @@ const ExportManager = {
 
 // 设置管理
 const SettingsManager = {
+  _eventsBound: false,
+
   // 显示设置模态框
   show: function() {
     document.getElementById('settingsModal').classList.remove('hidden');
-    
+
     // 加载当前设置
     const settings = Storage.getSettings();
-    
+
     // 更新API状态显示
     this.updateApiStatuses(settings);
-    
+
     // 填充API密钥到输入框
     this.loadApiKeys(settings);
-    
+
     // 填充系统偏好
     document.getElementById('defaultLanguage').value = settings.defaultLanguage || 'python';
     document.getElementById('autoSaveHistory').checked = settings.autoSaveHistory !== false;
     document.getElementById('showNotifications').checked = settings.showNotifications !== false;
-    
-    // 绑定API配置面板事件
-    this.bindApiEvents();
+
+    // 绑定API配置面板事件（只绑定一次）
+    if (!this._eventsBound) {
+      this.bindApiEvents();
+      this._eventsBound = true;
+    }
+
+    // 将 localStorage 中已有的 key 同步到后端（后端重启后恢复）
+    this.syncKeysToBackend(settings);
+  },
+
+  // 将 localStorage 里的 key 批量同步到后端
+  syncKeysToBackend: async function(settings) {
+    const providers = ['openai', 'deepseek', 'claude', 'gemini', 'qwen', 'baichuan', 'chatglm'];
+    for (const provider of providers) {
+      const key = settings[`${provider}Key`];
+      if (key && key.trim()) {
+        try {
+          await fetch(API_BASE + '/api/v1/settings/api-key', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ provider, api_key: key.trim() })
+          });
+        } catch (e) {
+          // 静默失败，不影响 UI
+        }
+      }
+    }
   },
   
   updateApiStatuses: function(settings) {
@@ -2862,7 +2889,18 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('开始执行健康检查...');
     getHealth();
   }, 500);
-  
+
+  // 页面加载时将 localStorage 里的 key 同步到后端
+  SettingsManager.syncKeysToBackend(Storage.getSettings());
+
+  // 初始化需求管理模块（复用系统LLM配置）
+  if (typeof RequirementsManager !== 'undefined') {
+    RequirementsManager.init();
+    console.log('✅ Professional需求管理模块已初始化');
+  } else {
+    console.warn('⚠️ RequirementsManager未加载');
+  }
+
   // 生成按钮事件
   const runBtn = document.getElementById('runBtn');
   if (runBtn) {

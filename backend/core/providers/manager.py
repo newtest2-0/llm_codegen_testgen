@@ -7,6 +7,7 @@ from .base import ProviderBase
 from .openai_compatible import OpenAICompatibleProvider
 from .anthropic import AnthropicProvider
 from .google import GoogleProvider
+from .ollama_provider import OllamaProvider
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +51,16 @@ class ProviderManager:
             ValueError: 不支持的提供者类型
         """
         kind = config.get("kind", "")
-        
+        print(f"[DEBUG] Creating provider with config: {config}")
+        print(f"[DEBUG] Provider kind: {kind}")
         if kind == "openai_compatible":
             return OpenAICompatibleProvider(config)
         elif kind == "anthropic":
             return AnthropicProvider(config)
         elif kind == "google":
             return GoogleProvider(config)
+        elif kind == "ollama":
+            return OllamaProvider(config)
         else:
             raise ValueError(f"不支持的提供者类型: {kind}")
     

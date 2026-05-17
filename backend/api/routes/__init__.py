@@ -7,6 +7,7 @@ from .evaluation import router as evaluation_router
 from .system import router as system_router
 from .testing import router as testing_router
 from .settings import router as settings_router
+from .requirements import router as requirements_router
 
 # 创建主路由器
 router = APIRouter()
@@ -17,5 +18,6 @@ router.include_router(evaluation_router, prefix="/evaluation", tags=["代码评�
 router.include_router(testing_router, prefix="/testing", tags=["智能测试"])
 router.include_router(system_router, prefix="/system", tags=["系统管理"])
 router.include_router(settings_router, prefix="/settings", tags=["系统设置"])
+router.include_router(requirements_router, prefix="/requirements", tags=["需求管理"])
 
 __all__ = ["router"]

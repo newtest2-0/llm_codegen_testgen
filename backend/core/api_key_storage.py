@@ -25,12 +25,12 @@ class APIKeyStorage:
         self._storage_file = None
         for path in possible_paths:
             if path.exists():
-                self._storage_file = path
+                self._storage_file = path.resolve()
                 break
-        
+
         # 如果都不存在，使用第一个作为默认
         if self._storage_file is None:
-            self._storage_file = Path("backend/.api_keys.json")
+            self._storage_file = Path("backend/.api_keys.json").resolve()
             
         self._load_from_file()
     

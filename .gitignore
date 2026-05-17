@@ -91,6 +91,7 @@ pids
 *.pid.lock
 
 # Project specific
+backend/.api_keys.json
 config/local.json
 data/
 temp/
